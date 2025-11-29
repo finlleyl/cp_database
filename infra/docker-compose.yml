@@ -25,6 +25,7 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+      HTTP_PORT: ${HTTP_PORT}
     depends_on:
       postgres:
         condition: service_healthy
