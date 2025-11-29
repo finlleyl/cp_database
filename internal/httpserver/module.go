@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	config "github.com/finlleyl/cp_database/internal/confiig"
+	"github.com/finlleyl/cp_database/internal/config"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 	"go.uber.org/zap"

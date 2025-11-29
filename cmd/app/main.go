@@ -1,7 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"github.com/finlleyl/cp_database/internal/config"
+	"github.com/finlleyl/cp_database/internal/httpserver"
+	"github.com/finlleyl/cp_database/internal/logger"
+	"go.uber.org/fx"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	fx.New(
+		logger.Module,
+		config.Module,
+		httpserver.Module,
+	).Run()
 }
