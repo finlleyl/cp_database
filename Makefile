@@ -38,7 +38,7 @@ docker-build: ## Собрать Docker образ
 	docker build -f $(DOCKERFILE) -t $(APP_NAME):latest .
 
 docker-up: ## Запустить сервисы через Docker Compose
-	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE) up --build -d
 
 docker-down: ## Остановить сервисы Docker Compose
 	$(DOCKER_COMPOSE) down
