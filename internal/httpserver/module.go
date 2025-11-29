@@ -6,6 +6,15 @@ import (
 	"net/http"
 
 	"github.com/finlleyl/cp_database/internal/config"
+	"github.com/finlleyl/cp_database/internal/domain/account"
+	"github.com/finlleyl/cp_database/internal/domain/audit"
+	"github.com/finlleyl/cp_database/internal/domain/batchimport"
+	"github.com/finlleyl/cp_database/internal/domain/offer"
+	"github.com/finlleyl/cp_database/internal/domain/statistics"
+	"github.com/finlleyl/cp_database/internal/domain/strategy"
+	"github.com/finlleyl/cp_database/internal/domain/subscription"
+	"github.com/finlleyl/cp_database/internal/domain/trade"
+	"github.com/finlleyl/cp_database/internal/domain/user"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
@@ -25,9 +34,31 @@ func NewRouter(logger *zap.Logger) *gin.Engine {
 	return r
 }
 
-func RegisterRoutes(r *gin.Engine) {
-	r.GET("/health", healthRoute)
-	r.GET("/ping", pingRoute)
+// RegisterAllRoutes is an fx.Invoke function that registers all routes
+func RegisterAllRoutes(
+	r *gin.Engine,
+	userHandler *user.Handler,
+	accountHandler *account.Handler,
+	strategyHandler *strategy.Handler,
+	offerHandler *offer.Handler,
+	subscriptionHandler *subscription.Handler,
+	tradeHandler *trade.Handler,
+	statisticsHandler *statistics.Handler,
+	batchImportHandler *batchimport.Handler,
+	auditHandler *audit.Handler,
+) {
+	params := RouteParams{
+		UserHandler:         userHandler,
+		AccountHandler:      accountHandler,
+		StrategyHandler:     strategyHandler,
+		OfferHandler:        offerHandler,
+		SubscriptionHandler: subscriptionHandler,
+		TradeHandler:        tradeHandler,
+		StatisticsHandler:   statisticsHandler,
+		BatchImportHandler:  batchImportHandler,
+		AuditHandler:        auditHandler,
+	}
+	RegisterRoutes(r, params)
 }
 
 func NewHTTPServer(
@@ -69,6 +100,6 @@ var Module = fx.Options(
 		NewHTTPServer,
 	),
 	fx.Invoke(
-		RegisterRoutes,
+		RegisterAllRoutes,
 	),
 )
