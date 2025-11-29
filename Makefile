@@ -3,7 +3,7 @@
 APP_NAME := cp_database
 BINARY_NAME := app
 CMD_PATH := ./cmd/app
-DOCKER_COMPOSE := docker-compose -f infra/docker-compose.yml
+DOCKER_COMPOSE := docker-compose --env-file .env -f infra/docker-compose.yml
 DOCKERFILE := infra/Dockerfile
 
 deps: ## Установить зависимости
