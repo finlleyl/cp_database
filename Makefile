@@ -52,3 +52,5 @@ docker-restart: ## Перезапустить сервисы Docker Compose
 docker-ps: ## Показать статус контейнеров
 	$(DOCKER_COMPOSE) ps
 
+migrate-create: ## make migrate-create name=add_master_table
+	migrate create -ext sql -dir migrations -seq $(name)
