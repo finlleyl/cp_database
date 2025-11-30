@@ -1,10 +1,15 @@
-.PHONY: help build run test clean deps fmt lint docker-build docker-up docker-down docker-logs
+.PHONY: help build run test clean deps fmt lint docker-build docker-up docker-down docker-logs migrate-create migrate-up migrate-down
 
 APP_NAME := cp_database
 BINARY_NAME := app
 CMD_PATH := ./cmd/app
 DOCKER_COMPOSE := docker-compose --env-file .env -f infra/docker-compose.yml
 DOCKERFILE := infra/Dockerfile
+
+DB_USER        ?= $(shell grep POSTGRES_USER .env | cut -d '=' -f2)
+DB_PASSWORD    ?= $(shell grep POSTGRES_PASSWORD .env | cut -d '=' -f2)
+DB_NAME        ?= $(shell grep POSTGRES_DB .env | cut -d '=' -f2)
+DB_DSN := postgres://$(DB_USER):$(DB_PASSWORD)@localhost:5432/$(DB_NAME)?sslmode=disable
 
 deps: ## Установить зависимости
 	go mod download
@@ -54,3 +59,9 @@ docker-ps: ## Показать статус контейнеров
 
 migrate-create: ## make migrate-create name=add_master_table
 	migrate create -ext sql -dir migrations -seq $(name)
+
+migrate-up:
+	migrate -path=migrations -database "$(DB_DSN)" up
+
+migrate-down:
+	migrate -path=migrations -database "$(DB_DSN)" down -all
