@@ -10,7 +10,7 @@ import (
 
 // Subscription represents an investor's subscription to a strategy
 type Subscription struct {
-	ID              int64                     `json:"id" db:"id"`
+	ID                int64                     `json:"id" db:"id"`
 	InvestorAccountID int64                     `json:"investor_account_id" db:"investor_account_id"`
 	OfferUUID         uuid.UUID                 `json:"offer_uuid" db:"offer_uuid"`
 	UserID            int64                     `json:"user_id" db:"user_id"`

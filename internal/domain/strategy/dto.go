@@ -50,6 +50,5 @@ type StrategyFilter struct {
 	MinROI         *float64              `form:"min_roi"`
 	MaxDrawdownPct *float64              `form:"max_drawdown_pct"`
 	RiskScore      *int                  `form:"risk_score"`
-	Search         string                `form:"search"`
 	common.Pagination
 }

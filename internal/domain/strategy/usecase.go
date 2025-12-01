@@ -14,7 +14,7 @@ import (
 type UseCase interface {
 	Create(ctx context.Context, req *CreateStrategyRequest) (*Strategy, error)
 	GetByID(ctx context.Context, id int64) (*GetStrategyByIDResponse, error)
-	List(ctx context.Context, filter *StrategyFilter) (*common.PaginatedResult[Strategy], error)
+	List(ctx context.Context, filter *StrategyFilter) (*common.PaginatedResult[GetStrategyByIDResponse], error)
 	Update(ctx context.Context, id int64, req *UpdateStrategyRequest) (*Strategy, error)
 	ChangeStatus(ctx context.Context, id int64, req *ChangeStatusRequest) (*Strategy, error)
 }
@@ -74,7 +74,7 @@ func (u *useCase) GetByID(ctx context.Context, id int64) (*GetStrategyByIDRespon
 	return u.repo.GetByID(ctx, id)
 }
 
-func (u *useCase) List(ctx context.Context, filter *StrategyFilter) (*common.PaginatedResult[Strategy], error) {
+func (u *useCase) List(ctx context.Context, filter *StrategyFilter) (*common.PaginatedResult[GetStrategyByIDResponse], error) {
 	// TODO: Implement strategy listing business logic
 	// Supports filtering by status, min_roi, max_drawdown_pct, risk_score, search by nickname
 	filter.SetDefaults()

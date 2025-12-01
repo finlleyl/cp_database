@@ -9,7 +9,7 @@ import (
 
 // Offer represents a strategy's offer for investors
 type Offer struct {
-	ID                   int64          `json:"id" db:"id"`
+	ID                     int64              `json:"id" db:"id"`
 	StrategyUUID           uuid.UUID          `json:"strategy_uuid" db:"strategy_uuid"`
 	Name                   string             `json:"name" db:"name"`
 	PerformanceFee         float64            `json:"performance_fee" db:"performance_fee"`
@@ -25,7 +25,7 @@ type Offer struct {
 
 // CreateOfferRequest represents the request to create a new offer
 type CreateOfferRequest struct {
-	StrategyID           int64          `json:"strategy_id" binding:"required"`
+	StrategyID             int64              `json:"strategy_id" binding:"required"`
 	Name                   string             `json:"name" binding:"required"`
 	PerformanceFee         float64            `json:"performance_fee" binding:"gte=0,lte=100"`
 	PerformanceFeeInterval common.FeeInterval `json:"performance_fee_interval" binding:"required,oneof=daily weekly monthly"`

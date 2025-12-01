@@ -25,24 +25,24 @@ const (
 
 // Trade represents a master's trade
 type Trade struct {
-	ID           int64       `json:"id" db:"id"`
-	StrategyID   int64       `json:"strategy_id" db:"strategy_id"`
-	AccountID    int64       `json:"account_id" db:"account_id"`
-	Symbol       string      `json:"symbol" db:"symbol"`
-	Type         TradeType   `json:"type" db:"type"`
-	Volume       float64     `json:"volume" db:"volume"`
-	OpenPrice    float64     `json:"open_price" db:"open_price"`
-	ClosePrice   *float64    `json:"close_price,omitempty" db:"close_price"`
-	StopLoss     *float64    `json:"stop_loss,omitempty" db:"stop_loss"`
-	TakeProfit   *float64    `json:"take_profit,omitempty" db:"take_profit"`
-	Profit       float64     `json:"profit" db:"profit"`
-	Commission   float64     `json:"commission" db:"commission"`
-	Swap         float64     `json:"swap" db:"swap"`
-	Status       TradeStatus `json:"status" db:"status"`
-	OpenedAt     time.Time   `json:"opened_at" db:"opened_at"`
-	ClosedAt     *time.Time  `json:"closed_at,omitempty" db:"closed_at"`
-	CreatedAt    time.Time   `json:"created_at" db:"created_at"`
-	UpdatedAt    time.Time   `json:"updated_at" db:"updated_at"`
+	ID         int64       `json:"id" db:"id"`
+	StrategyID int64       `json:"strategy_id" db:"strategy_id"`
+	AccountID  int64       `json:"account_id" db:"account_id"`
+	Symbol     string      `json:"symbol" db:"symbol"`
+	Type       TradeType   `json:"type" db:"type"`
+	Volume     float64     `json:"volume" db:"volume"`
+	OpenPrice  float64     `json:"open_price" db:"open_price"`
+	ClosePrice *float64    `json:"close_price,omitempty" db:"close_price"`
+	StopLoss   *float64    `json:"stop_loss,omitempty" db:"stop_loss"`
+	TakeProfit *float64    `json:"take_profit,omitempty" db:"take_profit"`
+	Profit     float64     `json:"profit" db:"profit"`
+	Commission float64     `json:"commission" db:"commission"`
+	Swap       float64     `json:"swap" db:"swap"`
+	Status     TradeStatus `json:"status" db:"status"`
+	OpenedAt   time.Time   `json:"opened_at" db:"opened_at"`
+	ClosedAt   *time.Time  `json:"closed_at,omitempty" db:"closed_at"`
+	CreatedAt  time.Time   `json:"created_at" db:"created_at"`
+	UpdatedAt  time.Time   `json:"updated_at" db:"updated_at"`
 }
 
 // CopiedTrade represents a trade copied to an investor's account

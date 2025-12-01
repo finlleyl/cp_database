@@ -145,18 +145,18 @@ func (u *useCase) CopyTrade(ctx context.Context, tradeID int64, req *CopyTradeRe
 		copyRatio := 1.0 // Default, should be read from subscription config
 
 		copiedTrade := &CopiedTrade{
-			OriginalTradeID:  trade.ID,
-			SubscriptionID: sub.ID,
-			InvestorAccount:  sub.InvestorAccountID,
-			Symbol:           trade.Symbol,
-			Type:             trade.Type,
-			Volume:           trade.Volume * copyRatio,
-			CopyRatio:        copyRatio,
-			OpenPrice:        trade.OpenPrice,
-			StopLoss:         trade.StopLoss,
-			TakeProfit:       trade.TakeProfit,
-			Status:           TradeStatusOpen,
-			OpenedAt:         trade.OpenedAt,
+			OriginalTradeID: trade.ID,
+			SubscriptionID:  sub.ID,
+			InvestorAccount: sub.InvestorAccountID,
+			Symbol:          trade.Symbol,
+			Type:            trade.Type,
+			Volume:          trade.Volume * copyRatio,
+			CopyRatio:       copyRatio,
+			OpenPrice:       trade.OpenPrice,
+			StopLoss:        trade.StopLoss,
+			TakeProfit:      trade.TakeProfit,
+			Status:          TradeStatusOpen,
+			OpenedAt:        trade.OpenedAt,
 		}
 
 		created, err := u.copiedTradeRepo.Create(ctx, copiedTrade)

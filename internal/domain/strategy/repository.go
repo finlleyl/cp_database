@@ -3,6 +3,8 @@ package strategy
 import (
 	"context"
 	"fmt"
+	"math"
+	"strings"
 
 	"github.com/finlleyl/cp_database/internal/domain/common"
 	"github.com/jmoiron/sqlx"
@@ -13,7 +15,7 @@ import (
 type Repository interface {
 	Create(ctx context.Context, req *CreateStrategyRequest) (*Strategy, error)
 	GetByID(ctx context.Context, id int64) (*GetStrategyByIDResponse, error)
-	List(ctx context.Context, filter *StrategyFilter) (*common.PaginatedResult[Strategy], error)
+	List(ctx context.Context, filter *StrategyFilter) (*common.PaginatedResult[GetStrategyByIDResponse], error)
 	Update(ctx context.Context, id int64, req *UpdateStrategyRequest) (*Strategy, error)
 	ChangeStatus(ctx context.Context, id int64, req *ChangeStatusRequest) (*Strategy, error)
 	GetByAccountID(ctx context.Context, accountID int64) (*Strategy, error)
@@ -49,10 +51,71 @@ func (r *repository) GetByID(ctx context.Context, id int64) (*GetStrategyByIDRes
 	return &response, nil
 }
 
-func (r *repository) List(ctx context.Context, filter *StrategyFilter) (*common.PaginatedResult[Strategy], error) {
-	// TODO: Implement strategy listing with filters (status, min_roi, max_drawdown, risk_score, search)
-	r.logger.Info("Listing strategies", zap.Any("filter", filter))
-	return nil, fmt.Errorf("not implemented")
+func (r *repository) List(ctx context.Context, filter *StrategyFilter) (*common.PaginatedResult[GetStrategyByIDResponse], error) {
+	var (
+		where  []string
+		args   []interface{}
+		argPos = 1
+	)
+
+	if filter.Status != "" {
+		where = append(where, fmt.Sprintf("status = $%d", argPos))
+		args = append(args, filter.Status)
+		argPos++
+	}
+
+	if filter.MinROI != nil {
+		where = append(where, fmt.Sprintf("roi >= $%d", argPos))
+		args = append(args, *filter.MinROI)
+		argPos++
+	}
+
+	if filter.MaxDrawdownPct != nil {
+		where = append(where, fmt.Sprintf("max_drawdown_pct <= $%d", argPos))
+		args = append(args, *filter.MaxDrawdownPct)
+		argPos++
+	}
+
+	if filter.RiskScore != nil {
+		where = append(where, fmt.Sprintf("risk_score = $%d", argPos))
+		args = append(args, *filter.RiskScore)
+		argPos++
+	}
+
+	whereSQL := ""
+	if len(where) > 0 {
+		whereSQL = "WHERE " + strings.Join(where, " AND ")
+	}
+
+	countQuery := `SELECT COUNT(*) FROM vw_strategy_performance ` + whereSQL
+
+	var total int64
+	if err := r.db.GetContext(ctx, &total, countQuery, args...); err != nil {
+		return nil, fmt.Errorf("count failed: %w", err)
+	}
+
+	filter.Pagination.SetDefaults()
+
+	mainQuery := fmt.Sprintf(`
+		SELECT *
+		FROM vw_strategy_performance
+		%s
+		ORDER BY total_profit DESC
+		LIMIT %d OFFSET %d
+	`, whereSQL, filter.Limit, filter.Offset)
+
+	var items []GetStrategyByIDResponse
+	if err := r.db.SelectContext(ctx, &items, mainQuery, args...); err != nil {
+		return nil, fmt.Errorf("list failed: %w", err)
+	}
+
+	return &common.PaginatedResult[GetStrategyByIDResponse]{
+		Data:       items,
+		Total:      total,
+		Page:       filter.Page,
+		Limit:      filter.Limit,
+		TotalPages: int(math.Ceil(float64(total) / float64(filter.Limit))),
+	}, nil
 }
 
 func (r *repository) Update(ctx context.Context, id int64, req *UpdateStrategyRequest) (*Strategy, error) {
