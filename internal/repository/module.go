@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jmoiron/sqlx"
-	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/finlleyl/cp_database/internal/config"
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jmoiron/sqlx"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )

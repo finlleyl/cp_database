@@ -16,4 +16,3 @@ func RegisterRoutes(rg *gin.RouterGroup, h *Handler) {
 		subscriptions.GET("/:uuid/status-history", h.GetStatusHistory)
 	}
 }
-

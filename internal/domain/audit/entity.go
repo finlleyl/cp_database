@@ -66,4 +66,3 @@ type AuditCreateRequest struct {
 	IPAddress  string
 	UserAgent  string
 }
-

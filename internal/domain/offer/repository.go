@@ -33,8 +33,8 @@ func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 
 func (r *repository) Create(ctx context.Context, req *CreateOfferRequest) (*Offer, error) {
 	// TODO: Implement offer creation with fee settings
-	r.logger.Info("Creating offer", 
-		zap.String("strategy_uuid", req.StrategyUUID.String()), 
+	r.logger.Info("Creating offer",
+		zap.String("strategy_uuid", req.StrategyUUID.String()),
 		zap.String("name", req.Name),
 		zap.Float64("performance_fee", req.PerformanceFee))
 	return nil, fmt.Errorf("not implemented")
@@ -75,4 +75,3 @@ func (r *repository) GetActiveByStrategyUUID(ctx context.Context, strategyUUID u
 	r.logger.Info("Getting active offers by strategy UUID", zap.String("strategy_uuid", strategyUUID.String()))
 	return nil, fmt.Errorf("not implemented")
 }
-

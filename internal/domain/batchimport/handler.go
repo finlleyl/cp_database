@@ -101,4 +101,3 @@ func (h *Handler) GetJobErrors(c *gin.Context) {
 
 	c.JSON(http.StatusOK, errors)
 }
-

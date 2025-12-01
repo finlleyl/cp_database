@@ -25,26 +25,26 @@ type Subscription struct {
 
 // SubscriptionConfig represents the configuration for a subscription
 type SubscriptionConfig struct {
-	CopyRatio        float64 `json:"copy_ratio"`
-	MaxPositionSize  float64 `json:"max_position_size"`
-	InvertSignals    bool    `json:"invert_signals"`
-	CopyStopLoss     bool    `json:"copy_stop_loss"`
-	CopyTakeProfit   bool    `json:"copy_take_profit"`
+	CopyRatio       float64 `json:"copy_ratio"`
+	MaxPositionSize float64 `json:"max_position_size"`
+	InvertSignals   bool    `json:"invert_signals"`
+	CopyStopLoss    bool    `json:"copy_stop_loss"`
+	CopyTakeProfit  bool    `json:"copy_take_profit"`
 }
 
 // RiskRules represents the risk rules for a subscription
 type RiskRules struct {
-	MaxDrawdownPct   float64 `json:"max_drawdown_pct"`
-	MaxDailyLoss     float64 `json:"max_daily_loss"`
-	StopOnDrawdown   bool    `json:"stop_on_drawdown"`
+	MaxDrawdownPct float64 `json:"max_drawdown_pct"`
+	MaxDailyLoss   float64 `json:"max_daily_loss"`
+	StopOnDrawdown bool    `json:"stop_on_drawdown"`
 }
 
 // SubscriptionFilter represents the filter criteria for a subscription
 type SubscriptionFilterConfig struct {
-	AllowedSymbols   []string `json:"allowed_symbols"`
-	BlockedSymbols   []string `json:"blocked_symbols"`
-	MinLotSize       float64  `json:"min_lot_size"`
-	MaxLotSize       float64  `json:"max_lot_size"`
+	AllowedSymbols []string `json:"allowed_symbols"`
+	BlockedSymbols []string `json:"blocked_symbols"`
+	MinLotSize     float64  `json:"min_lot_size"`
+	MaxLotSize     float64  `json:"max_lot_size"`
 }
 
 // CreateSubscriptionRequest represents the request to create a new subscription
@@ -83,8 +83,7 @@ type SubscriptionStatusHistory struct {
 
 // SubscriptionFilter represents filter parameters for subscription search
 type SubscriptionFilter struct {
-	UserID   int64                     `form:"user_id"`
-	Status   common.SubscriptionStatus `form:"status"`
+	UserID int64                     `form:"user_id"`
+	Status common.SubscriptionStatus `form:"status"`
 	common.Pagination
 }
-

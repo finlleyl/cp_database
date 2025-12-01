@@ -15,10 +15,10 @@ func main() {
 		logger.Module,
 		config.Module,
 		repository.Module,
-		
+
 		// Domain modules (all domains aggregated)
 		domain.Module,
-		
+
 		// HTTP server module
 		httpserver.Module,
 	).Run()

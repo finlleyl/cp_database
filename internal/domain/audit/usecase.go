@@ -29,26 +29,25 @@ func (u *useCase) List(ctx context.Context, filter *AuditFilter) (*common.Pagina
 	// Supports filtering by entity, entity_id, action, user_id, time range
 	filter.SetDefaults()
 	u.logger.Info("UseCase: Listing audit logs", zap.Any("filter", filter))
-	
+
 	logs, err := u.repo.List(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("list audit logs: %w", err)
 	}
-	
+
 	return logs, nil
 }
 
 func (u *useCase) GetByEntityID(ctx context.Context, entityType EntityType, entityID string) ([]*AuditLog, error) {
 	// TODO: Implement get audit logs by entity business logic
-	u.logger.Info("UseCase: Getting audit logs by entity", 
+	u.logger.Info("UseCase: Getting audit logs by entity",
 		zap.String("entity_type", string(entityType)),
 		zap.String("entity_id", entityID))
-	
+
 	logs, err := u.repo.GetByEntityID(ctx, entityType, entityID)
 	if err != nil {
 		return nil, fmt.Errorf("get audit logs by entity: %w", err)
 	}
-	
+
 	return logs, nil
 }
-

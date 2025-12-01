@@ -15,4 +15,3 @@ func RegisterRoutes(rg *gin.RouterGroup, h *Handler) {
 		accounts.DELETE("/:id", h.Delete)
 	}
 }
-

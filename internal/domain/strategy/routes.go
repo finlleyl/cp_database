@@ -15,4 +15,3 @@ func RegisterRoutes(rg *gin.RouterGroup, h *Handler) {
 		strategies.POST("/:uuid/status", h.ChangeStatus)
 	}
 }
-

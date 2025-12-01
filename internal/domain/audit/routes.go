@@ -8,4 +8,3 @@ import (
 func RegisterRoutes(rg *gin.RouterGroup, h *Handler) {
 	rg.GET("/audit", h.List)
 }
-

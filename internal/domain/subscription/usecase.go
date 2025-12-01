@@ -40,15 +40,15 @@ func (u *useCase) Create(ctx context.Context, req *CreateSubscriptionRequest) (*
 	// 4. Create subscription with status = preparing
 	// 5. Create status history record
 	// 6. Create audit log
-	u.logger.Info("UseCase: Creating subscription", 
+	u.logger.Info("UseCase: Creating subscription",
 		zap.Int64("investor_account_id", req.InvestorAccountID),
 		zap.String("offer_uuid", req.OfferUUID.String()))
-	
+
 	subscription, err := u.repo.Create(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("create subscription: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeSubscription,
@@ -56,7 +56,7 @@ func (u *useCase) Create(ctx context.Context, req *CreateSubscriptionRequest) (*
 		Action:     audit.AuditActionCreate,
 		NewValue:   subscription,
 	})
-	
+
 	return subscription, nil
 }
 
@@ -81,17 +81,17 @@ func (u *useCase) Update(ctx context.Context, uuid uuid.UUID, req *UpdateSubscri
 	// 3. Update subscription
 	// 4. Create audit log
 	u.logger.Info("UseCase: Updating subscription", zap.String("uuid", uuid.String()))
-	
+
 	oldSubscription, err := u.repo.GetByUUID(ctx, uuid)
 	if err != nil {
 		return nil, fmt.Errorf("get subscription: %w", err)
 	}
-	
+
 	subscription, err := u.repo.Update(ctx, uuid, req)
 	if err != nil {
 		return nil, fmt.Errorf("update subscription: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeSubscription,
@@ -100,7 +100,7 @@ func (u *useCase) Update(ctx context.Context, uuid uuid.UUID, req *UpdateSubscri
 		OldValue:   oldSubscription,
 		NewValue:   subscription,
 	})
-	
+
 	return subscription, nil
 }
 
@@ -112,20 +112,20 @@ func (u *useCase) ChangeStatus(ctx context.Context, uuid uuid.UUID, req *ChangeS
 	// 3. Update subscription status
 	// 4. Create status history record
 	// 5. Create audit log
-	u.logger.Info("UseCase: Changing subscription status", 
+	u.logger.Info("UseCase: Changing subscription status",
 		zap.String("uuid", uuid.String()),
 		zap.String("status", string(req.Status)))
-	
+
 	oldSubscription, err := u.repo.GetByUUID(ctx, uuid)
 	if err != nil {
 		return nil, fmt.Errorf("get subscription: %w", err)
 	}
-	
+
 	subscription, err := u.repo.ChangeStatus(ctx, uuid, req, changedBy)
 	if err != nil {
 		return nil, fmt.Errorf("change subscription status: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeSubscription,
@@ -139,7 +139,7 @@ func (u *useCase) ChangeStatus(ctx context.Context, uuid uuid.UUID, req *ChangeS
 			"status_reason": req.StatusReason,
 		},
 	})
-	
+
 	return subscription, nil
 }
 
@@ -148,4 +148,3 @@ func (u *useCase) GetStatusHistory(ctx context.Context, uuid uuid.UUID) ([]*Subs
 	u.logger.Info("UseCase: Getting subscription status history", zap.String("uuid", uuid.String()))
 	return u.repo.GetStatusHistory(ctx, uuid)
 }
-

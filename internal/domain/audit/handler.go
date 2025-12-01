@@ -35,4 +35,3 @@ func (h *Handler) List(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
-

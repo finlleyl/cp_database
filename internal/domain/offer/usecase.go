@@ -29,15 +29,15 @@ type useCase struct {
 
 // NewUseCase creates a new offer use case
 func NewUseCase(
-	repo Repository, 
+	repo Repository,
 	strategyRepo strategy.Repository,
-	auditRepo audit.Repository, 
+	auditRepo audit.Repository,
 	logger *zap.Logger,
 ) UseCase {
 	return &useCase{
-		repo:         repo, 
+		repo:         repo,
 		strategyRepo: strategyRepo,
-		auditRepo:    auditRepo, 
+		auditRepo:    auditRepo,
 		logger:       logger,
 	}
 }
@@ -49,10 +49,10 @@ func (u *useCase) Create(ctx context.Context, req *CreateOfferRequest) (*Offer, 
 	// 2. Validate fee settings
 	// 3. Create offer with status = active
 	// 4. Create audit log
-	u.logger.Info("UseCase: Creating offer", 
+	u.logger.Info("UseCase: Creating offer",
 		zap.String("strategy_uuid", req.StrategyUUID.String()),
 		zap.String("name", req.Name))
-	
+
 	// Validate strategy exists
 	strat, err := u.strategyRepo.GetByUUID(ctx, req.StrategyUUID)
 	if err != nil {
@@ -61,12 +61,12 @@ func (u *useCase) Create(ctx context.Context, req *CreateOfferRequest) (*Offer, 
 	if strat == nil {
 		return nil, fmt.Errorf("strategy not found")
 	}
-	
+
 	offer, err := u.repo.Create(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("create offer: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeOffer,
@@ -74,7 +74,7 @@ func (u *useCase) Create(ctx context.Context, req *CreateOfferRequest) (*Offer, 
 		Action:     audit.AuditActionCreate,
 		NewValue:   offer,
 	})
-	
+
 	return offer, nil
 }
 
@@ -99,17 +99,17 @@ func (u *useCase) Update(ctx context.Context, uuid uuid.UUID, req *UpdateOfferRe
 	// 3. Update offer
 	// 4. Create audit log
 	u.logger.Info("UseCase: Updating offer", zap.String("uuid", uuid.String()))
-	
+
 	oldOffer, err := u.repo.GetByUUID(ctx, uuid)
 	if err != nil {
 		return nil, fmt.Errorf("get offer: %w", err)
 	}
-	
+
 	offer, err := u.repo.Update(ctx, uuid, req)
 	if err != nil {
 		return nil, fmt.Errorf("update offer: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeOffer,
@@ -118,26 +118,26 @@ func (u *useCase) Update(ctx context.Context, uuid uuid.UUID, req *UpdateOfferRe
 		OldValue:   oldOffer,
 		NewValue:   offer,
 	})
-	
+
 	return offer, nil
 }
 
 func (u *useCase) ChangeStatus(ctx context.Context, uuid uuid.UUID, req *ChangeStatusRequest) (*Offer, error) {
 	// TODO: Implement offer status change business logic
-	u.logger.Info("UseCase: Changing offer status", 
+	u.logger.Info("UseCase: Changing offer status",
 		zap.String("uuid", uuid.String()),
 		zap.String("status", string(req.Status)))
-	
+
 	oldOffer, err := u.repo.GetByUUID(ctx, uuid)
 	if err != nil {
 		return nil, fmt.Errorf("get offer: %w", err)
 	}
-	
+
 	offer, err := u.repo.ChangeStatus(ctx, uuid, req)
 	if err != nil {
 		return nil, fmt.Errorf("change offer status: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeOffer,
@@ -151,7 +151,6 @@ func (u *useCase) ChangeStatus(ctx context.Context, uuid uuid.UUID, req *ChangeS
 			"status_reason": req.StatusReason,
 		},
 	})
-	
+
 	return offer, nil
 }
-

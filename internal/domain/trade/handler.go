@@ -77,7 +77,7 @@ func (h *Handler) CopyTrade(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"copied_count": len(copiedTrades),
+		"copied_count":  len(copiedTrades),
 		"copied_trades": copiedTrades,
 	})
 }
@@ -99,4 +99,3 @@ func (h *Handler) ListCopiedTrades(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
-

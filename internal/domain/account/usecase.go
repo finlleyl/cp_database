@@ -35,15 +35,15 @@ func (u *useCase) Create(ctx context.Context, req *CreateAccountRequest) (*Accou
 	// 2. Check MT login uniqueness
 	// 3. Create account
 	// 4. Create audit log
-	u.logger.Info("UseCase: Creating account", 
+	u.logger.Info("UseCase: Creating account",
 		zap.Int64("user_id", req.UserID),
 		zap.String("mt_login", req.MTLogin))
-	
+
 	account, err := u.repo.Create(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("create account: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeAccount,
@@ -51,7 +51,7 @@ func (u *useCase) Create(ctx context.Context, req *CreateAccountRequest) (*Accou
 		Action:     audit.AuditActionCreate,
 		NewValue:   account,
 	})
-	
+
 	return account, nil
 }
 
@@ -74,17 +74,17 @@ func (u *useCase) Update(ctx context.Context, id int64, req *UpdateAccountReques
 	// 3. Update account
 	// 4. Create audit log
 	u.logger.Info("UseCase: Updating account", zap.Int64("id", id))
-	
+
 	oldAccount, err := u.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("get account: %w", err)
 	}
-	
+
 	account, err := u.repo.Update(ctx, id, req)
 	if err != nil {
 		return nil, fmt.Errorf("update account: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeAccount,
@@ -93,7 +93,7 @@ func (u *useCase) Update(ctx context.Context, id int64, req *UpdateAccountReques
 		OldValue:   oldAccount,
 		NewValue:   account,
 	})
-	
+
 	return account, nil
 }
 
@@ -103,16 +103,16 @@ func (u *useCase) Delete(ctx context.Context, id int64) error {
 	// 2. Delete account if no dependencies
 	// 3. Create audit log
 	u.logger.Info("UseCase: Deleting account", zap.Int64("id", id))
-	
+
 	oldAccount, err := u.repo.GetByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("get account: %w", err)
 	}
-	
+
 	if err := u.repo.Delete(ctx, id); err != nil {
 		return fmt.Errorf("delete account: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeAccount,
@@ -120,7 +120,6 @@ func (u *useCase) Delete(ctx context.Context, id int64) error {
 		Action:     audit.AuditActionDelete,
 		OldValue:   oldAccount,
 	})
-	
+
 	return nil
 }
-

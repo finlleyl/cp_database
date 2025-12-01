@@ -72,4 +72,3 @@ func (r *repository) GetActiveByUUID(ctx context.Context, uuid uuid.UUID) (*Stra
 	r.logger.Info("Getting active strategy by UUID", zap.String("uuid", uuid.String()))
 	return nil, fmt.Errorf("not implemented")
 }
-

@@ -145,4 +145,3 @@ func (h *Handler) GetStatusHistory(c *gin.Context) {
 
 	c.JSON(http.StatusOK, history)
 }
-

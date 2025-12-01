@@ -117,4 +117,3 @@ func (h *Handler) Delete(c *gin.Context) {
 
 	c.JSON(http.StatusNoContent, nil)
 }
-

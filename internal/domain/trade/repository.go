@@ -43,7 +43,7 @@ func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 
 func (r *repository) Create(ctx context.Context, req *CreateTradeRequest) (*Trade, error) {
 	// TODO: Implement trade creation
-	r.logger.Info("Creating trade", 
+	r.logger.Info("Creating trade",
 		zap.String("strategy_uuid", req.StrategyUUID.String()),
 		zap.String("symbol", req.Symbol),
 		zap.String("type", string(req.Type)),
@@ -93,7 +93,7 @@ func NewCopiedTradeRepository(db *sqlx.DB, logger *zap.Logger) CopiedTradeReposi
 
 func (r *copiedTradeRepository) Create(ctx context.Context, trade *CopiedTrade) (*CopiedTrade, error) {
 	// TODO: Implement copied trade creation
-	r.logger.Info("Creating copied trade", 
+	r.logger.Info("Creating copied trade",
 		zap.Int64("original_trade_id", trade.OriginalTradeID),
 		zap.String("subscription_uuid", trade.SubscriptionUUID.String()))
 	return nil, fmt.Errorf("not implemented")
@@ -134,4 +134,3 @@ func (r *copiedTradeRepository) CloseTrade(ctx context.Context, id int64, closeP
 	r.logger.Info("Closing copied trade", zap.Int64("id", id), zap.Float64("close_price", closePrice))
 	return fmt.Errorf("not implemented")
 }
-

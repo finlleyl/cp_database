@@ -14,4 +14,3 @@ func RegisterRoutes(rg *gin.RouterGroup, h *Handler) {
 		stats.GET("/accounts/:account_id", h.GetAccountStatistics)
 	}
 }
-

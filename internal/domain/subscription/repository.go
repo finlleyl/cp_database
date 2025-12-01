@@ -35,7 +35,7 @@ func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 
 func (r *repository) Create(ctx context.Context, req *CreateSubscriptionRequest) (*Subscription, error) {
 	// TODO: Implement subscription creation with config, risk_rules, filter
-	r.logger.Info("Creating subscription", 
+	r.logger.Info("Creating subscription",
 		zap.Int64("investor_account_id", req.InvestorAccountID),
 		zap.String("offer_uuid", req.OfferUUID.String()))
 	return nil, fmt.Errorf("not implemented")
@@ -61,8 +61,8 @@ func (r *repository) Update(ctx context.Context, uuid uuid.UUID, req *UpdateSubs
 
 func (r *repository) ChangeStatus(ctx context.Context, uuid uuid.UUID, req *ChangeStatusRequest, changedBy int64) (*Subscription, error) {
 	// TODO: Implement subscription status change with history record
-	r.logger.Info("Changing subscription status", 
-		zap.String("uuid", uuid.String()), 
+	r.logger.Info("Changing subscription status",
+		zap.String("uuid", uuid.String()),
 		zap.String("status", string(req.Status)))
 	return nil, fmt.Errorf("not implemented")
 }
@@ -87,9 +87,8 @@ func (r *repository) GetByOfferUUID(ctx context.Context, offerUUID uuid.UUID) ([
 
 func (r *repository) ArchiveByStrategyUUID(ctx context.Context, strategyUUID uuid.UUID, reason string) error {
 	// TODO: Implement archive all active subscriptions by strategy UUID
-	r.logger.Info("Archiving subscriptions by strategy UUID", 
+	r.logger.Info("Archiving subscriptions by strategy UUID",
 		zap.String("strategy_uuid", strategyUUID.String()),
 		zap.String("reason", reason))
 	return fmt.Errorf("not implemented")
 }
-

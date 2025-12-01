@@ -57,17 +57,17 @@ func (u *useCase) Create(ctx context.Context, req *CreateTradeRequest) (*Trade, 
 	// 4. Trigger copy to all active subscriptions (async or sync based on config)
 	// 5. Update account statistics
 	// 6. Create audit log
-	u.logger.Info("UseCase: Creating trade", 
+	u.logger.Info("UseCase: Creating trade",
 		zap.String("strategy_uuid", req.StrategyUUID.String()),
 		zap.String("symbol", req.Symbol),
 		zap.String("type", string(req.Type)),
 		zap.Float64("volume", req.Volume))
-	
+
 	trade, err := u.repo.Create(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("create trade: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeTrade,
@@ -75,7 +75,7 @@ func (u *useCase) Create(ctx context.Context, req *CreateTradeRequest) (*Trade, 
 		Action:     audit.AuditActionCreate,
 		NewValue:   trade,
 	})
-	
+
 	return trade, nil
 }
 
@@ -105,10 +105,10 @@ func (u *useCase) CopyTrade(ctx context.Context, tradeID int64, req *CopyTradeRe
 	//    d. Update investor account statistics
 	//    e. Calculate performance fee and create commission record
 	// 4. Return list of created copied trades
-	u.logger.Info("UseCase: Copying trade", 
+	u.logger.Info("UseCase: Copying trade",
 		zap.Int64("trade_id", tradeID),
 		zap.Any("subscription_uuids", req.SubscriptionUUIDs))
-	
+
 	trade, err := u.repo.GetByID(ctx, tradeID)
 	if err != nil {
 		return nil, fmt.Errorf("get trade: %w", err)
@@ -116,7 +116,7 @@ func (u *useCase) CopyTrade(ctx context.Context, tradeID int64, req *CopyTradeRe
 	if trade == nil {
 		return nil, fmt.Errorf("trade not found")
 	}
-	
+
 	var subscriptions []*subscription.Subscription
 	if len(req.SubscriptionUUIDs) > 0 {
 		// Get specific subscriptions
@@ -137,13 +137,13 @@ func (u *useCase) CopyTrade(ctx context.Context, tradeID int64, req *CopyTradeRe
 			return nil, fmt.Errorf("get active subscriptions: %w", err)
 		}
 	}
-	
+
 	var copiedTrades []*CopiedTrade
 	for _, sub := range subscriptions {
 		// TODO: Apply filter rules from subscription
 		// TODO: Calculate volume based on copy ratio
 		copyRatio := 1.0 // Default, should be read from subscription config
-		
+
 		copiedTrade := &CopiedTrade{
 			OriginalTradeID:  trade.ID,
 			SubscriptionUUID: sub.UUID,
@@ -158,25 +158,25 @@ func (u *useCase) CopyTrade(ctx context.Context, tradeID int64, req *CopyTradeRe
 			Status:           TradeStatusOpen,
 			OpenedAt:         trade.OpenedAt,
 		}
-		
+
 		created, err := u.copiedTradeRepo.Create(ctx, copiedTrade)
 		if err != nil {
-			u.logger.Error("Failed to create copied trade", 
+			u.logger.Error("Failed to create copied trade",
 				zap.Error(err),
 				zap.String("subscription_uuid", sub.UUID.String()))
 			continue
 		}
-		
+
 		copiedTrades = append(copiedTrades, created)
-		
+
 		// TODO: Update account statistics
 		// TODO: Calculate and record performance fee
 	}
-	
-	u.logger.Info("Trade copied", 
+
+	u.logger.Info("Trade copied",
 		zap.Int64("trade_id", tradeID),
 		zap.Int("copied_count", len(copiedTrades)))
-	
+
 	return copiedTrades, nil
 }
 
@@ -186,4 +186,3 @@ func (u *useCase) ListCopiedTrades(ctx context.Context, filter *CopiedTradeFilte
 	u.logger.Info("UseCase: Listing copied trades", zap.Any("filter", filter))
 	return u.copiedTradeRepo.List(ctx, filter)
 }
-

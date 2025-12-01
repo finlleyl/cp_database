@@ -12,8 +12,7 @@ func RegisterRoutes(rg *gin.RouterGroup, h *Handler) {
 		trades.GET("", h.List)
 		trades.POST("/:id/copy", h.CopyTrade)
 	}
-	
+
 	// Copied trades endpoint
 	rg.GET("/copied-trades", h.ListCopiedTrades)
 }
-

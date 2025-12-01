@@ -13,4 +13,3 @@ var Module = fx.Options(
 		NewHandler,
 	),
 )
-

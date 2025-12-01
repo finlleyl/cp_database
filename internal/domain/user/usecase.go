@@ -35,12 +35,12 @@ func (u *useCase) Create(ctx context.Context, req *CreateUserRequest) (*User, er
 	// 2. Create user via repository
 	// 3. Create audit log
 	u.logger.Info("UseCase: Creating user", zap.String("name", req.Name))
-	
+
 	user, err := u.repo.Create(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("create user: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeUser,
@@ -48,7 +48,7 @@ func (u *useCase) Create(ctx context.Context, req *CreateUserRequest) (*User, er
 		Action:     audit.AuditActionCreate,
 		NewValue:   user,
 	})
-	
+
 	return user, nil
 }
 
@@ -72,17 +72,17 @@ func (u *useCase) Update(ctx context.Context, id int64, req *UpdateUserRequest) 
 	// 3. Update user
 	// 4. Create audit log with old/new values
 	u.logger.Info("UseCase: Updating user", zap.Int64("id", id))
-	
+
 	oldUser, err := u.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("get user: %w", err)
 	}
-	
+
 	user, err := u.repo.Update(ctx, id, req)
 	if err != nil {
 		return nil, fmt.Errorf("update user: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeUser,
@@ -91,7 +91,7 @@ func (u *useCase) Update(ctx context.Context, id int64, req *UpdateUserRequest) 
 		OldValue:   oldUser,
 		NewValue:   user,
 	})
-	
+
 	return user, nil
 }
 
@@ -101,16 +101,16 @@ func (u *useCase) Delete(ctx context.Context, id int64) error {
 	// 2. Mark user as deleted
 	// 3. Create audit log
 	u.logger.Info("UseCase: Deleting user", zap.Int64("id", id))
-	
+
 	oldUser, err := u.repo.GetByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("get user: %w", err)
 	}
-	
+
 	if err := u.repo.Delete(ctx, id); err != nil {
 		return fmt.Errorf("delete user: %w", err)
 	}
-	
+
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeUser,
@@ -118,7 +118,6 @@ func (u *useCase) Delete(ctx context.Context, id int64) error {
 		Action:     audit.AuditActionDelete,
 		OldValue:   oldUser,
 	})
-	
+
 	return nil
 }
-

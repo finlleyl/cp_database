@@ -124,4 +124,3 @@ func (h *Handler) ChangeStatus(c *gin.Context) {
 
 	c.JSON(http.StatusOK, strategy)
 }
-

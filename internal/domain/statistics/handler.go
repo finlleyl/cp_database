@@ -95,4 +95,3 @@ func (h *Handler) GetAccountStatistics(c *gin.Context) {
 
 	c.JSON(http.StatusOK, stats)
 }
-

@@ -14,4 +14,3 @@ func RegisterRoutes(rg *gin.RouterGroup, h *Handler) {
 		batchImport.GET("/jobs/:id/errors", h.GetJobErrors)
 	}
 }
-

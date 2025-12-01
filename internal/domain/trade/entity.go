@@ -95,4 +95,3 @@ type CopiedTradeFilter struct {
 	SubscriptionUUID uuid.UUID `form:"subscription_uuid"`
 	common.Pagination
 }
-

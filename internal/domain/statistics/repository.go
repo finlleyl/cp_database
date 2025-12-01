@@ -30,7 +30,7 @@ func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 
 func (r *repository) GetStrategyLeaderboard(ctx context.Context, req *LeaderboardRequest) ([]*StrategyLeaderboard, error) {
 	// TODO: Implement using fn_get_strategy_leaderboard database function
-	r.logger.Info("Getting strategy leaderboard", 
+	r.logger.Info("Getting strategy leaderboard",
 		zap.String("period", string(req.Period)),
 		zap.Int("limit", req.Limit))
 	return nil, fmt.Errorf("not implemented")
@@ -44,7 +44,7 @@ func (r *repository) GetInvestorPortfolio(ctx context.Context, req *InvestorPort
 
 func (r *repository) GetMasterIncome(ctx context.Context, req *MasterIncomeRequest) (*MasterIncome, error) {
 	// TODO: Implement using fn_get_master_income database function
-	r.logger.Info("Getting master income", 
+	r.logger.Info("Getting master income",
 		zap.Int64("user_id", req.UserID),
 		zap.Time("from", req.From),
 		zap.Time("to", req.To))
@@ -53,7 +53,7 @@ func (r *repository) GetMasterIncome(ctx context.Context, req *MasterIncomeReque
 
 func (r *repository) GetAccountStatistics(ctx context.Context, req *AccountStatisticsRequest) (*AccountStatistics, error) {
 	// TODO: Implement get account statistics from account_statistics table
-	r.logger.Info("Getting account statistics", 
+	r.logger.Info("Getting account statistics",
 		zap.Int64("account_id", req.AccountID),
 		zap.String("period", string(req.Period)))
 	return nil, fmt.Errorf("not implemented")
@@ -67,10 +67,9 @@ func (r *repository) UpdateAccountStatistics(ctx context.Context, accountID int6
 
 func (r *repository) CreateCommission(ctx context.Context, commission *Commission) (*Commission, error) {
 	// TODO: Implement commission creation
-	r.logger.Info("Creating commission", 
+	r.logger.Info("Creating commission",
 		zap.String("subscription_uuid", commission.SubscriptionUUID.String()),
 		zap.String("type", string(commission.Type)),
 		zap.Float64("amount", commission.Amount))
 	return nil, fmt.Errorf("not implemented")
 }
-

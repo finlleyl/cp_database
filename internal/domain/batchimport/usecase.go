@@ -44,17 +44,17 @@ func (u *useCase) ImportTrades(ctx context.Context, req *ImportTradesRequest, fi
 	//    c. Update job progress
 	//    d. Record errors if any
 	// 5. Complete job with summary
-	u.logger.Info("UseCase: Importing trades", 
+	u.logger.Info("UseCase: Importing trades",
 		zap.String("strategy_uuid", req.StrategyUUID),
 		zap.String("file_name", fileName),
 		zap.String("file_format", req.FileFormat))
-	
+
 	params, _ := json.Marshal(&ImportTradesParameters{
 		StrategyUUID: req.StrategyUUID,
 		AccountID:    req.AccountID,
 		FileFormat:   req.FileFormat,
 	})
-	
+
 	job := &ImportJob{
 		Type:       ImportTypeTrades,
 		Status:     common.ImportJobStatusPending,
@@ -62,15 +62,15 @@ func (u *useCase) ImportTrades(ctx context.Context, req *ImportTradesRequest, fi
 		FileSize:   fileSize,
 		Parameters: params,
 	}
-	
+
 	job, err := u.repo.CreateJob(ctx, job)
 	if err != nil {
 		return nil, fmt.Errorf("create import job: %w", err)
 	}
-	
+
 	// Start processing in background
 	go u.processTradeImport(context.Background(), job.ID, req, file)
-	
+
 	return job, nil
 }
 
@@ -78,27 +78,27 @@ func (u *useCase) processTradeImport(ctx context.Context, jobID int64, req *Impo
 	// TODO: Implement actual trade import processing
 	// This is a placeholder for the background processing logic
 	u.logger.Info("Processing trade import", zap.Int64("job_id", jobID))
-	
+
 	// Update status to processing
 	if err := u.repo.UpdateJobStatus(ctx, jobID, common.ImportJobStatusProcessing); err != nil {
 		u.logger.Error("Failed to update job status", zap.Error(err))
 		return
 	}
-	
+
 	startTime := time.Now()
 	var processed, success, failed int
-	
+
 	// TODO: Parse file based on format (CSV or JSON)
 	// TODO: For each record, create trade and track progress
-	
+
 	strategyUUID, _ := uuid.Parse(req.StrategyUUID)
-	
+
 	// Placeholder: simulate processing
 	_ = strategyUUID
 	processed = 0
 	success = 0
 	failed = 0
-	
+
 	// Complete job with summary
 	summary := &ImportJobSummary{
 		TotalRecords:     processed,
@@ -108,12 +108,12 @@ func (u *useCase) processTradeImport(ctx context.Context, jobID int64, req *Impo
 		ErrorsByType:     make(map[string]int),
 		Duration:         time.Since(startTime),
 	}
-	
+
 	if err := u.repo.CompleteJob(ctx, jobID, summary); err != nil {
 		u.logger.Error("Failed to complete job", zap.Error(err))
 	}
-	
-	u.logger.Info("Trade import completed", 
+
+	u.logger.Info("Trade import completed",
 		zap.Int64("job_id", jobID),
 		zap.Int("processed", processed),
 		zap.Int("success", success),
@@ -138,4 +138,3 @@ func (u *useCase) GetJobErrors(ctx context.Context, jobID int64) ([]*ImportError
 	u.logger.Info("UseCase: Getting import job errors", zap.Int64("job_id", jobID))
 	return u.repo.GetJobErrors(ctx, jobID)
 }
-

@@ -57,4 +57,3 @@ func (r *repository) Delete(ctx context.Context, id int64) error {
 	r.logger.Info("Deleting user", zap.Int64("id", id))
 	return fmt.Errorf("not implemented")
 }
-
