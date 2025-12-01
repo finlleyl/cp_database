@@ -2,9 +2,9 @@ package subscription
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -39,13 +39,13 @@ func (h *Handler) Create(c *gin.Context) {
 
 // GetByUUID handles GET /api/v1/subscriptions/:uuid
 func (h *Handler) GetByUUID(c *gin.Context) {
-	subscriptionUUID, err := uuid.Parse(c.Param("uuid"))
+	subscriptionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid subscription uuid"})
 		return
 	}
 
-	subscription, err := h.useCase.GetByUUID(c.Request.Context(), subscriptionUUID)
+	subscription, err := h.useCase.GetByID(c.Request.Context(), subscriptionID)
 	if err != nil {
 		h.logger.Error("Failed to get subscription", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -79,7 +79,7 @@ func (h *Handler) List(c *gin.Context) {
 
 // Update handles PUT /api/v1/subscriptions/:uuid
 func (h *Handler) Update(c *gin.Context) {
-	subscriptionUUID, err := uuid.Parse(c.Param("uuid"))
+	subscriptionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid subscription uuid"})
 		return
@@ -91,7 +91,7 @@ func (h *Handler) Update(c *gin.Context) {
 		return
 	}
 
-	subscription, err := h.useCase.Update(c.Request.Context(), subscriptionUUID, &req)
+	subscription, err := h.useCase.Update(c.Request.Context(), subscriptionID, &req)
 	if err != nil {
 		h.logger.Error("Failed to update subscription", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -103,7 +103,7 @@ func (h *Handler) Update(c *gin.Context) {
 
 // ChangeStatus handles POST /api/v1/subscriptions/:uuid/status
 func (h *Handler) ChangeStatus(c *gin.Context) {
-	subscriptionUUID, err := uuid.Parse(c.Param("uuid"))
+	subscriptionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid subscription uuid"})
 		return
@@ -118,7 +118,7 @@ func (h *Handler) ChangeStatus(c *gin.Context) {
 	// TODO: Get changedBy from auth context
 	changedBy := int64(0)
 
-	subscription, err := h.useCase.ChangeStatus(c.Request.Context(), subscriptionUUID, &req, changedBy)
+	subscription, err := h.useCase.ChangeStatus(c.Request.Context(), subscriptionID, &req, changedBy)
 	if err != nil {
 		h.logger.Error("Failed to change subscription status", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -130,13 +130,13 @@ func (h *Handler) ChangeStatus(c *gin.Context) {
 
 // GetStatusHistory handles GET /api/v1/subscriptions/:uuid/status-history
 func (h *Handler) GetStatusHistory(c *gin.Context) {
-	subscriptionUUID, err := uuid.Parse(c.Param("uuid"))
+	subscriptionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid subscription uuid"})
 		return
 	}
 
-	history, err := h.useCase.GetStatusHistory(c.Request.Context(), subscriptionUUID)
+	history, err := h.useCase.GetStatusHistory(c.Request.Context(), subscriptionID)
 	if err != nil {
 		h.logger.Error("Failed to get subscription status history", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

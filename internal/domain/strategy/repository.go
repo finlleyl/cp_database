@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/finlleyl/cp_database/internal/domain/common"
-	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
@@ -13,12 +12,12 @@ import (
 // Repository defines the interface for strategy data operations
 type Repository interface {
 	Create(ctx context.Context, req *CreateStrategyRequest) (*Strategy, error)
-	GetByUUID(ctx context.Context, uuid uuid.UUID) (*Strategy, error)
+	GetByID(ctx context.Context, id int64) (*GetStrategyByIDResponse, error)
 	List(ctx context.Context, filter *StrategyFilter) (*common.PaginatedResult[Strategy], error)
-	Update(ctx context.Context, uuid uuid.UUID, req *UpdateStrategyRequest) (*Strategy, error)
-	ChangeStatus(ctx context.Context, uuid uuid.UUID, req *ChangeStatusRequest) (*Strategy, error)
+	Update(ctx context.Context, id int64, req *UpdateStrategyRequest) (*Strategy, error)
+	ChangeStatus(ctx context.Context, id int64, req *ChangeStatusRequest) (*Strategy, error)
 	GetByAccountID(ctx context.Context, accountID int64) (*Strategy, error)
-	GetActiveByUUID(ctx context.Context, uuid uuid.UUID) (*Strategy, error)
+	GetActiveByID(ctx context.Context, id int64) (*Strategy, error)
 }
 
 type repository struct {
@@ -37,10 +36,17 @@ func (r *repository) Create(ctx context.Context, req *CreateStrategyRequest) (*S
 	return nil, fmt.Errorf("not implemented")
 }
 
-func (r *repository) GetByUUID(ctx context.Context, uuid uuid.UUID) (*Strategy, error) {
-	// TODO: Implement get strategy by UUID
-	r.logger.Info("Getting strategy by UUID", zap.String("uuid", uuid.String()))
-	return nil, fmt.Errorf("not implemented")
+func (r *repository) GetByID(ctx context.Context, id int64) (*GetStrategyByIDResponse, error) {
+	query := `
+		SELECT * from vw_strategy_performance where id = $1
+	`
+	var response GetStrategyByIDResponse
+	err := r.db.GetContext(ctx, &response, query, id)
+	if err != nil {
+		r.logger.Error("Failed to get strategy by ID", zap.Error(err))
+		return nil, fmt.Errorf("failed to get strategy by ID: %w", err)
+	}
+	return &response, nil
 }
 
 func (r *repository) List(ctx context.Context, filter *StrategyFilter) (*common.PaginatedResult[Strategy], error) {
@@ -49,15 +55,15 @@ func (r *repository) List(ctx context.Context, filter *StrategyFilter) (*common.
 	return nil, fmt.Errorf("not implemented")
 }
 
-func (r *repository) Update(ctx context.Context, uuid uuid.UUID, req *UpdateStrategyRequest) (*Strategy, error) {
+func (r *repository) Update(ctx context.Context, id int64, req *UpdateStrategyRequest) (*Strategy, error) {
 	// TODO: Implement strategy update
-	r.logger.Info("Updating strategy", zap.String("uuid", uuid.String()))
+	r.logger.Info("Updating strategy", zap.Int64("id", id))
 	return nil, fmt.Errorf("not implemented")
 }
 
-func (r *repository) ChangeStatus(ctx context.Context, uuid uuid.UUID, req *ChangeStatusRequest) (*Strategy, error) {
+func (r *repository) ChangeStatus(ctx context.Context, id int64, req *ChangeStatusRequest) (*Strategy, error) {
 	// TODO: Implement strategy status change with status_reason
-	r.logger.Info("Changing strategy status", zap.String("uuid", uuid.String()), zap.String("status", string(req.Status)))
+	r.logger.Info("Changing strategy status", zap.Int64("id", id), zap.String("status", string(req.Status)))
 	return nil, fmt.Errorf("not implemented")
 }
 
@@ -67,8 +73,8 @@ func (r *repository) GetByAccountID(ctx context.Context, accountID int64) (*Stra
 	return nil, fmt.Errorf("not implemented")
 }
 
-func (r *repository) GetActiveByUUID(ctx context.Context, uuid uuid.UUID) (*Strategy, error) {
+func (r *repository) GetActiveByID(ctx context.Context, id int64) (*Strategy, error) {
 	// TODO: Implement get active strategy by UUID
-	r.logger.Info("Getting active strategy by UUID", zap.String("uuid", uuid.String()))
+	r.logger.Info("Getting active strategy by ID", zap.Int64("id", id))
 	return nil, fmt.Errorf("not implemented")
 }

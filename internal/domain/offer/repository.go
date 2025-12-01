@@ -34,7 +34,7 @@ func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 func (r *repository) Create(ctx context.Context, req *CreateOfferRequest) (*Offer, error) {
 	// TODO: Implement offer creation with fee settings
 	r.logger.Info("Creating offer",
-		zap.String("strategy_uuid", req.StrategyUUID.String()),
+		zap.Int64("strategy_id", req.StrategyID),
 		zap.String("name", req.Name),
 		zap.Float64("performance_fee", req.PerformanceFee))
 	return nil, fmt.Errorf("not implemented")

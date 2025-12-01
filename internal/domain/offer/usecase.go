@@ -50,11 +50,11 @@ func (u *useCase) Create(ctx context.Context, req *CreateOfferRequest) (*Offer, 
 	// 3. Create offer with status = active
 	// 4. Create audit log
 	u.logger.Info("UseCase: Creating offer",
-		zap.String("strategy_uuid", req.StrategyUUID.String()),
+		zap.Int64("strategy_id", req.StrategyID),
 		zap.String("name", req.Name))
 
 	// Validate strategy exists
-	strat, err := u.strategyRepo.GetByUUID(ctx, req.StrategyUUID)
+	strat, err := u.strategyRepo.GetByID(ctx, req.StrategyID)
 	if err != nil {
 		return nil, fmt.Errorf("get strategy: %w", err)
 	}
@@ -70,7 +70,7 @@ func (u *useCase) Create(ctx context.Context, req *CreateOfferRequest) (*Offer, 
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeOffer,
-		EntityID:   offer.UUID.String(),
+		EntityID:   offer.ID,
 		Action:     audit.AuditActionCreate,
 		NewValue:   offer,
 	})
@@ -113,7 +113,7 @@ func (u *useCase) Update(ctx context.Context, uuid uuid.UUID, req *UpdateOfferRe
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeOffer,
-		EntityID:   uuid.String(),
+		EntityID:   offer.ID,
 		Action:     audit.AuditActionUpdate,
 		OldValue:   oldOffer,
 		NewValue:   offer,
@@ -141,7 +141,7 @@ func (u *useCase) ChangeStatus(ctx context.Context, uuid uuid.UUID, req *ChangeS
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeOffer,
-		EntityID:   uuid.String(),
+		EntityID:   offer.ID,
 		Action:     audit.AuditActionStatusChange,
 		OldValue:   oldOffer,
 		NewValue:   offer,

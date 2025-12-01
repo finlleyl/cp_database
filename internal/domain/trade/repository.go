@@ -95,7 +95,7 @@ func (r *copiedTradeRepository) Create(ctx context.Context, trade *CopiedTrade) 
 	// TODO: Implement copied trade creation
 	r.logger.Info("Creating copied trade",
 		zap.Int64("original_trade_id", trade.OriginalTradeID),
-		zap.String("subscription_uuid", trade.SubscriptionUUID.String()))
+		zap.Int64("subscription_id", trade.SubscriptionID))
 	return nil, fmt.Errorf("not implemented")
 }
 

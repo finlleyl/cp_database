@@ -71,7 +71,7 @@ func (u *useCase) Create(ctx context.Context, req *CreateTradeRequest) (*Trade, 
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeTrade,
-		EntityID:   fmt.Sprintf("%d", trade.ID),
+		EntityID:   trade.ID,
 		Action:     audit.AuditActionCreate,
 		NewValue:   trade,
 	})
@@ -107,7 +107,7 @@ func (u *useCase) CopyTrade(ctx context.Context, tradeID int64, req *CopyTradeRe
 	// 4. Return list of created copied trades
 	u.logger.Info("UseCase: Copying trade",
 		zap.Int64("trade_id", tradeID),
-		zap.Any("subscription_uuids", req.SubscriptionUUIDs))
+		zap.Any("subscription_ids", req.SubscriptionIDs))
 
 	trade, err := u.repo.GetByID(ctx, tradeID)
 	if err != nil {
@@ -118,10 +118,10 @@ func (u *useCase) CopyTrade(ctx context.Context, tradeID int64, req *CopyTradeRe
 	}
 
 	var subscriptions []*subscription.Subscription
-	if len(req.SubscriptionUUIDs) > 0 {
+	if len(req.SubscriptionIDs) > 0 {
 		// Get specific subscriptions
-		for _, subUUID := range req.SubscriptionUUIDs {
-			sub, err := u.subscriptionRepo.GetByUUID(ctx, subUUID)
+		for _, subID := range req.SubscriptionIDs {
+			sub, err := u.subscriptionRepo.GetByID(ctx, subID)
 			if err != nil {
 				u.logger.Warn("Failed to get subscription", zap.Error(err))
 				continue
@@ -132,7 +132,7 @@ func (u *useCase) CopyTrade(ctx context.Context, tradeID int64, req *CopyTradeRe
 		}
 	} else {
 		// Get all active subscriptions for the strategy
-		subscriptions, err = u.subscriptionRepo.GetActiveByStrategyUUID(ctx, trade.StrategyUUID)
+		subscriptions, err = u.subscriptionRepo.GetActiveByStrategyID(ctx, trade.StrategyID)
 		if err != nil {
 			return nil, fmt.Errorf("get active subscriptions: %w", err)
 		}
@@ -146,7 +146,7 @@ func (u *useCase) CopyTrade(ctx context.Context, tradeID int64, req *CopyTradeRe
 
 		copiedTrade := &CopiedTrade{
 			OriginalTradeID:  trade.ID,
-			SubscriptionUUID: sub.UUID,
+			SubscriptionID: sub.ID,
 			InvestorAccount:  sub.InvestorAccountID,
 			Symbol:           trade.Symbol,
 			Type:             trade.Type,
@@ -163,7 +163,7 @@ func (u *useCase) CopyTrade(ctx context.Context, tradeID int64, req *CopyTradeRe
 		if err != nil {
 			u.logger.Error("Failed to create copied trade",
 				zap.Error(err),
-				zap.String("subscription_uuid", sub.UUID.String()))
+				zap.Int64("subscription_id", sub.ID))
 			continue
 		}
 

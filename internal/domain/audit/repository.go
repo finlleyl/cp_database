@@ -30,7 +30,7 @@ func (r *repository) Create(ctx context.Context, req *AuditCreateRequest) (*Audi
 	// TODO: Implement audit log creation
 	r.logger.Info("Creating audit log",
 		zap.String("entity_type", string(req.EntityType)),
-		zap.String("entity_id", req.EntityID),
+		zap.Int64("entity_id", req.EntityID),
 		zap.String("action", string(req.Action)))
 	return nil, fmt.Errorf("not implemented")
 }

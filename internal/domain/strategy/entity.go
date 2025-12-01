@@ -4,25 +4,30 @@ import (
 	"time"
 
 	"github.com/finlleyl/cp_database/internal/domain/common"
-	"github.com/google/uuid"
 )
 
 // Strategy represents a master's trading strategy
 type Strategy struct {
-	UUID             uuid.UUID             `json:"uuid" db:"uuid"`
-	AccountID        int64                 `json:"account_id" db:"account_id"`
-	UserID           int64                 `json:"user_id" db:"user_id"`
-	Nickname         string                `json:"nickname" db:"nickname"`
-	Summary          string                `json:"summary" db:"summary"`
-	PaymentAccountID *int64                `json:"payment_account_id,omitempty" db:"payment_account_id"`
-	AvatarURL        string                `json:"avatar_url" db:"avatar_url"`
-	Status           common.StrategyStatus `json:"status" db:"status"`
-	StatusReason     string                `json:"status_reason" db:"status_reason"`
-	ROI              float64               `json:"roi" db:"roi"`
-	MaxDrawdownPct   float64               `json:"max_drawdown_pct" db:"max_drawdown_pct"`
-	RiskScore        int                   `json:"risk_score" db:"risk_score"`
-	CreatedAt        time.Time             `json:"created_at" db:"created_at"`
-	UpdatedAt        time.Time             `json:"updated_at" db:"updated_at"`
+	ID              int64                 `json:"id" db:"id"`
+	MasterUserID    int64                 `json:"master_user_id" db:"master_user_id"`
+	MasterAccountID int64                 `json:"master_account_id" db:"master_account_id"`
+	Title           string                `json:"title" db:"title"`
+	Description     string                `json:"description" db:"description"`
+	Status          common.StrategyStatus `json:"status" db:"status"`
+	CreatedAt       time.Time             `json:"created_at" db:"created_at"`
+	UpdatedAt       time.Time             `json:"updated_at" db:"updated_at"`
+}
+
+type GetStrategyByIDResponse struct {
+	ID                  int64                 `json:"id" db:"id"`
+	Title               string                `json:"title" db:"title"`
+	Status              common.StrategyStatus `json:"status" db:"status"`
+	TotalSubscriptions  int64                 `json:"total_subscriptions" db:"total_subscriptions"`
+	ActiveSubscriptions int64                 `json:"active_subscriptions" db:"active_subscriptions"`
+	TotalCopiedTrades   int64                 `json:"total_copied_trades" db:"total_copied_trades"`
+	TotalProfit         float64               `json:"total_profit" db:"total_profit"`
+	TotalCommissions    float64               `json:"total_commissions" db:"total_commissions"`
+	UpdatedAt           time.Time             `json:"updated_at" db:"updated_at"`
 }
 
 // CreateStrategyRequest represents the request to create a new strategy

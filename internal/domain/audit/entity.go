@@ -57,7 +57,7 @@ type AuditFilter struct {
 // AuditCreateRequest is used internally to create audit log entries
 type AuditCreateRequest struct {
 	EntityType EntityType
-	EntityID   string
+	EntityID   int64
 	Action     AuditAction
 	UserID     *int64
 	OldValue   interface{}

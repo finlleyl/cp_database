@@ -26,7 +26,7 @@ const (
 // Trade represents a master's trade
 type Trade struct {
 	ID           int64       `json:"id" db:"id"`
-	StrategyUUID uuid.UUID   `json:"strategy_uuid" db:"strategy_uuid"`
+	StrategyID   int64       `json:"strategy_id" db:"strategy_id"`
 	AccountID    int64       `json:"account_id" db:"account_id"`
 	Symbol       string      `json:"symbol" db:"symbol"`
 	Type         TradeType   `json:"type" db:"type"`
@@ -47,23 +47,23 @@ type Trade struct {
 
 // CopiedTrade represents a trade copied to an investor's account
 type CopiedTrade struct {
-	ID               int64       `json:"id" db:"id"`
-	OriginalTradeID  int64       `json:"original_trade_id" db:"original_trade_id"`
-	SubscriptionUUID uuid.UUID   `json:"subscription_uuid" db:"subscription_uuid"`
-	InvestorAccount  int64       `json:"investor_account_id" db:"investor_account_id"`
-	Symbol           string      `json:"symbol" db:"symbol"`
-	Type             TradeType   `json:"type" db:"type"`
-	Volume           float64     `json:"volume" db:"volume"`
-	CopyRatio        float64     `json:"copy_ratio" db:"copy_ratio"`
-	OpenPrice        float64     `json:"open_price" db:"open_price"`
-	ClosePrice       *float64    `json:"close_price,omitempty" db:"close_price"`
-	StopLoss         *float64    `json:"stop_loss,omitempty" db:"stop_loss"`
-	TakeProfit       *float64    `json:"take_profit,omitempty" db:"take_profit"`
-	Profit           float64     `json:"profit" db:"profit"`
-	Status           TradeStatus `json:"status" db:"status"`
-	OpenedAt         time.Time   `json:"opened_at" db:"opened_at"`
-	ClosedAt         *time.Time  `json:"closed_at,omitempty" db:"closed_at"`
-	CreatedAt        time.Time   `json:"created_at" db:"created_at"`
+	ID              int64       `json:"id" db:"id"`
+	OriginalTradeID int64       `json:"original_trade_id" db:"original_trade_id"`
+	SubscriptionID  int64       `json:"subscription_id" db:"subscription_id"`
+	InvestorAccount int64       `json:"investor_account_id" db:"investor_account_id"`
+	Symbol          string      `json:"symbol" db:"symbol"`
+	Type            TradeType   `json:"type" db:"type"`
+	Volume          float64     `json:"volume" db:"volume"`
+	CopyRatio       float64     `json:"copy_ratio" db:"copy_ratio"`
+	OpenPrice       float64     `json:"open_price" db:"open_price"`
+	ClosePrice      *float64    `json:"close_price,omitempty" db:"close_price"`
+	StopLoss        *float64    `json:"stop_loss,omitempty" db:"stop_loss"`
+	TakeProfit      *float64    `json:"take_profit,omitempty" db:"take_profit"`
+	Profit          float64     `json:"profit" db:"profit"`
+	Status          TradeStatus `json:"status" db:"status"`
+	OpenedAt        time.Time   `json:"opened_at" db:"opened_at"`
+	ClosedAt        *time.Time  `json:"closed_at,omitempty" db:"closed_at"`
+	CreatedAt       time.Time   `json:"created_at" db:"created_at"`
 }
 
 // CreateTradeRequest represents the request to create a new trade
@@ -80,18 +80,18 @@ type CreateTradeRequest struct {
 
 // CopyTradeRequest represents the request to manually trigger trade copying
 type CopyTradeRequest struct {
-	SubscriptionUUIDs []uuid.UUID `json:"subscription_uuids,omitempty"`
+	SubscriptionIDs []int64 `json:"subscription_ids,omitempty"`
 }
 
 // TradeFilter represents filter parameters for trade search
 type TradeFilter struct {
-	StrategyUUID uuid.UUID `form:"strategy_uuid"`
+	StrategyID int64 `form:"strategy_id"`
 	common.TimeRange
 	common.Pagination
 }
 
 // CopiedTradeFilter represents filter parameters for copied trade search
 type CopiedTradeFilter struct {
-	SubscriptionUUID uuid.UUID `form:"subscription_uuid"`
+	SubscriptionID int64 `form:"subscription_id"`
 	common.Pagination
 }

@@ -10,8 +10,8 @@ func RegisterRoutes(rg *gin.RouterGroup, h *Handler) {
 	{
 		strategies.POST("", h.Create)
 		strategies.GET("", h.List)
-		strategies.GET("/:uuid", h.GetByUUID)
-		strategies.PUT("/:uuid", h.Update)
-		strategies.POST("/:uuid/status", h.ChangeStatus)
+		strategies.GET("/:id", h.GetByID)
+		strategies.PUT("/:id", h.Update)
+		strategies.POST("/:id/status", h.ChangeStatus)
 	}
 }

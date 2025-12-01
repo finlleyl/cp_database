@@ -1,0 +1,1 @@
+DROP VIEW IF EXISTS vw_strategy_performance;

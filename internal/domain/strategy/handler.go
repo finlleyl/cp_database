@@ -2,9 +2,9 @@ package strategy
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -37,15 +37,15 @@ func (h *Handler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, strategy)
 }
 
-// GetByUUID handles GET /api/v1/strategies/:uuid
-func (h *Handler) GetByUUID(c *gin.Context) {
-	strategyUUID, err := uuid.Parse(c.Param("uuid"))
+// GetByUUID handles GET /api/v1/strategies/id
+func (h *Handler) GetByID(c *gin.Context) {
+	strategyID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid strategy uuid"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid strategy id"})
 		return
 	}
 
-	strategy, err := h.useCase.GetByUUID(c.Request.Context(), strategyUUID)
+	strategy, err := h.useCase.GetByID(c.Request.Context(), strategyID)
 	if err != nil {
 		h.logger.Error("Failed to get strategy", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -79,9 +79,9 @@ func (h *Handler) List(c *gin.Context) {
 
 // Update handles PUT /api/v1/strategies/:uuid
 func (h *Handler) Update(c *gin.Context) {
-	strategyUUID, err := uuid.Parse(c.Param("uuid"))
+	strategyID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid strategy uuid"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid strategy id"})
 		return
 	}
 
@@ -91,7 +91,7 @@ func (h *Handler) Update(c *gin.Context) {
 		return
 	}
 
-	strategy, err := h.useCase.Update(c.Request.Context(), strategyUUID, &req)
+	strategy, err := h.useCase.Update(c.Request.Context(), strategyID, &req)
 	if err != nil {
 		h.logger.Error("Failed to update strategy", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -101,11 +101,11 @@ func (h *Handler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, strategy)
 }
 
-// ChangeStatus handles POST /api/v1/strategies/:uuid/status
+// ChangeStatus handles POST /api/v1/strategies/:id/status
 func (h *Handler) ChangeStatus(c *gin.Context) {
-	strategyUUID, err := uuid.Parse(c.Param("uuid"))
+	strategyID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid strategy uuid"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid strategy id"})
 		return
 	}
 
@@ -115,7 +115,7 @@ func (h *Handler) ChangeStatus(c *gin.Context) {
 		return
 	}
 
-	strategy, err := h.useCase.ChangeStatus(c.Request.Context(), strategyUUID, &req)
+	strategy, err := h.useCase.ChangeStatus(c.Request.Context(), strategyID, &req)
 	if err != nil {
 		h.logger.Error("Failed to change strategy status", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

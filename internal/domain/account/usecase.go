@@ -47,7 +47,7 @@ func (u *useCase) Create(ctx context.Context, req *CreateAccountRequest) (*Accou
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeAccount,
-		EntityID:   fmt.Sprintf("%d", account.ID),
+		EntityID:   account.ID,
 		Action:     audit.AuditActionCreate,
 		NewValue:   account,
 	})
@@ -88,7 +88,7 @@ func (u *useCase) Update(ctx context.Context, id int64, req *UpdateAccountReques
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeAccount,
-		EntityID:   fmt.Sprintf("%d", id),
+		EntityID:   id,
 		Action:     audit.AuditActionUpdate,
 		OldValue:   oldAccount,
 		NewValue:   account,
@@ -116,7 +116,7 @@ func (u *useCase) Delete(ctx context.Context, id int64) error {
 	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeAccount,
-		EntityID:   fmt.Sprintf("%d", id),
+		EntityID:   id,
 		Action:     audit.AuditActionDelete,
 		OldValue:   oldAccount,
 	})
