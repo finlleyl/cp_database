@@ -12,7 +12,6 @@ type UseCase interface {
 	GetStrategyLeaderboard(ctx context.Context, req *LeaderboardRequest) ([]*StrategyLeaderboard, error)
 	GetInvestorPortfolio(ctx context.Context, req *InvestorPortfolioRequest) (*InvestorPortfolio, error)
 	GetMasterIncome(ctx context.Context, req *MasterIncomeRequest) (*MasterIncome, error)
-	GetAccountStatistics(ctx context.Context, req *AccountStatisticsRequest) (*AccountStatistics, error)
 }
 
 type useCase struct {
@@ -53,9 +52,6 @@ func (u *useCase) GetInvestorPortfolio(ctx context.Context, req *InvestorPortfol
 }
 
 func (u *useCase) GetMasterIncome(ctx context.Context, req *MasterIncomeRequest) (*MasterIncome, error) {
-	// TODO: Implement master income business logic
-	// Uses fn_get_master_income database function
-	// Returns income breakdown by fee type and strategy
 	u.logger.Info("UseCase: Getting master income",
 		zap.Int64("user_id", req.UserID),
 		zap.Time("from", req.From),
@@ -67,24 +63,4 @@ func (u *useCase) GetMasterIncome(ctx context.Context, req *MasterIncomeRequest)
 	}
 
 	return income, nil
-}
-
-func (u *useCase) GetAccountStatistics(ctx context.Context, req *AccountStatisticsRequest) (*AccountStatistics, error) {
-	// TODO: Implement account statistics business logic
-	// Reads from account_statistics table
-	// Default period: all
-	if req.Period == "" {
-		req.Period = PeriodAll
-	}
-
-	u.logger.Info("UseCase: Getting account statistics",
-		zap.Int64("account_id", req.AccountID),
-		zap.String("period", string(req.Period)))
-
-	stats, err := u.repo.GetAccountStatistics(ctx, req)
-	if err != nil {
-		return nil, fmt.Errorf("get account statistics: %w", err)
-	}
-
-	return stats, nil
 }

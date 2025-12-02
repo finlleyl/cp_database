@@ -12,7 +12,6 @@ import (
 
 	"github.com/finlleyl/cp_database/internal/domain/common"
 	"github.com/finlleyl/cp_database/internal/domain/trade"
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -82,7 +81,7 @@ func (u *useCase) ImportTrades(ctx context.Context, req *ImportTradesRequest, fi
 
 	u.logger.Info("Trade import job created",
 		zap.Int64("job_id", createdJob.ID),
-		zap.String("strategy_uuid", req.StrategyUUID),
+		zap.Int64("strategy_id", req.StrategyID),
 		zap.String("file_format", req.FileFormat))
 
 	// Read file data before starting goroutine (file may be closed after handler returns)
@@ -131,12 +130,6 @@ func (u *useCase) processTradeImport(ctx context.Context, jobID int64, req *Impo
 		return
 	}
 
-	strategyUUID, err := uuid.Parse(req.StrategyUUID)
-	if err != nil {
-		u.completeJobWithError(ctx, jobID, "Invalid strategy UUID: "+err.Error())
-		return
-	}
-
 	var processedRows, errorRows int
 	var jobErrors []*ImportJobError
 
@@ -144,7 +137,7 @@ func (u *useCase) processTradeImport(ctx context.Context, jobID int64, req *Impo
 	for i, record := range records {
 		rowNumber := i + 1
 
-		createReq, err := u.mapRecordToTradeRequest(record, strategyUUID, req.AccountID)
+		createReq, err := u.mapRecordToTradeRequest(record, req.StrategyID, req.AccountID)
 		if err != nil {
 			errorRows++
 			rawData, _ := json.Marshal(record)
@@ -265,26 +258,34 @@ func (u *useCase) parseJSON(data []byte) ([]map[string]string, error) {
 	return records, nil
 }
 
-func (u *useCase) mapRecordToTradeRequest(record map[string]string, strategyUUID uuid.UUID, accountID int64) (*trade.CreateTradeRequest, error) {
+func (u *useCase) mapRecordToTradeRequest(record map[string]string, strategyID int64, accountID int64) (*trade.CreateTradeRequest, error) {
 	// Parse required fields
 	symbol, ok := record["symbol"]
 	if !ok || symbol == "" {
 		return nil, fmt.Errorf("missing required field: symbol")
 	}
 
-	typeStr, ok := record["type"]
-	if !ok || typeStr == "" {
-		return nil, fmt.Errorf("missing required field: type")
+	directionStr, ok := record["direction"]
+	if !ok || directionStr == "" {
+		// Try "type" as fallback
+		directionStr, ok = record["type"]
+		if !ok || directionStr == "" {
+			return nil, fmt.Errorf("missing required field: direction")
+		}
 	}
 
-	volumeStr, ok := record["volume"]
+	volumeStr, ok := record["volume_lots"]
 	if !ok || volumeStr == "" {
-		return nil, fmt.Errorf("missing required field: volume")
+		// Try "volume" as fallback
+		volumeStr, ok = record["volume"]
+		if !ok || volumeStr == "" {
+			return nil, fmt.Errorf("missing required field: volume_lots")
+		}
 	}
 
 	volume, err := strconv.ParseFloat(volumeStr, 64)
 	if err != nil {
-		return nil, fmt.Errorf("invalid volume: %w", err)
+		return nil, fmt.Errorf("invalid volume_lots: %w", err)
 	}
 
 	openPriceStr, ok := record["open_price"]
@@ -297,32 +298,29 @@ func (u *useCase) mapRecordToTradeRequest(record map[string]string, strategyUUID
 		return nil, fmt.Errorf("invalid open_price: %w", err)
 	}
 
-	// Parse optional fields
-	var stopLoss *float64
-	if sl, ok := record["stop_loss"]; ok && sl != "" {
-		parsed, err := strconv.ParseFloat(sl, 64)
-		if err == nil {
-			stopLoss = &parsed
-		}
+	// Parse open_time (required)
+	openTimeStr, ok := record["open_time"]
+	if !ok || openTimeStr == "" {
+		return nil, fmt.Errorf("missing required field: open_time")
 	}
 
-	var takeProfit *float64
-	if tp, ok := record["take_profit"]; ok && tp != "" {
-		parsed, err := strconv.ParseFloat(tp, 64)
-		if err == nil {
-			takeProfit = &parsed
+	openTime, err := time.Parse(time.RFC3339, openTimeStr)
+	if err != nil {
+		// Try alternative format
+		openTime, err = time.Parse("2006-01-02 15:04:05", openTimeStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid open_time format: %w", err)
 		}
 	}
 
 	return &trade.CreateTradeRequest{
-		StrategyUUID: strategyUUID,
-		AccountID:    accountID,
-		Symbol:       symbol,
-		Type:         trade.TradeType(typeStr),
-		Volume:       volume,
-		OpenPrice:    openPrice,
-		StopLoss:     stopLoss,
-		TakeProfit:   takeProfit,
+		StrategyID:      strategyID,
+		MasterAccountID: accountID,
+		Symbol:          symbol,
+		Direction:       trade.TradeDirection(directionStr),
+		VolumeLots:      volume,
+		OpenPrice:       openPrice,
+		OpenTime:        openTime,
 	}, nil
 }
 

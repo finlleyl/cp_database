@@ -2,7 +2,6 @@ package statistics
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -71,27 +70,4 @@ func (h *Handler) GetMasterIncome(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, income)
-}
-
-// GetAccountStatistics handles GET /api/v1/statistics/accounts/:account_id
-func (h *Handler) GetAccountStatistics(c *gin.Context) {
-	accountID, err := strconv.ParseInt(c.Param("account_id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid account id"})
-		return
-	}
-
-	req := &AccountStatisticsRequest{
-		AccountID: accountID,
-		Period:    Period(c.Query("period")),
-	}
-
-	stats, err := h.useCase.GetAccountStatistics(c.Request.Context(), req)
-	if err != nil {
-		h.logger.Error("Failed to get account statistics", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, stats)
 }

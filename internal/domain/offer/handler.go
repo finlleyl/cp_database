@@ -2,9 +2,9 @@ package offer
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -37,15 +37,15 @@ func (h *Handler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, offer)
 }
 
-// GetByUUID handles GET /api/v1/offers/:uuid
-func (h *Handler) GetByUUID(c *gin.Context) {
-	offerUUID, err := uuid.Parse(c.Param("uuid"))
+// GetByID handles GET /api/v1/offers/:id
+func (h *Handler) GetByID(c *gin.Context) {
+	offerID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid offer uuid"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid offer id"})
 		return
 	}
 
-	offer, err := h.useCase.GetByUUID(c.Request.Context(), offerUUID)
+	offer, err := h.useCase.GetByID(c.Request.Context(), offerID)
 	if err != nil {
 		h.logger.Error("Failed to get offer", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -77,11 +77,11 @@ func (h *Handler) List(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-// Update handles PUT /api/v1/offers/:uuid
+// Update handles PUT /api/v1/offers/:id
 func (h *Handler) Update(c *gin.Context) {
-	offerUUID, err := uuid.Parse(c.Param("uuid"))
+	offerID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid offer uuid"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid offer id"})
 		return
 	}
 
@@ -91,7 +91,7 @@ func (h *Handler) Update(c *gin.Context) {
 		return
 	}
 
-	offer, err := h.useCase.Update(c.Request.Context(), offerUUID, &req)
+	offer, err := h.useCase.Update(c.Request.Context(), offerID, &req)
 	if err != nil {
 		h.logger.Error("Failed to update offer", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -101,11 +101,11 @@ func (h *Handler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, offer)
 }
 
-// ChangeStatus handles POST /api/v1/offers/:uuid/status
+// ChangeStatus handles POST /api/v1/offers/:id/status
 func (h *Handler) ChangeStatus(c *gin.Context) {
-	offerUUID, err := uuid.Parse(c.Param("uuid"))
+	offerID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid offer uuid"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid offer id"})
 		return
 	}
 
@@ -115,7 +115,7 @@ func (h *Handler) ChangeStatus(c *gin.Context) {
 		return
 	}
 
-	offer, err := h.useCase.ChangeStatus(c.Request.Context(), offerUUID, &req)
+	offer, err := h.useCase.ChangeStatus(c.Request.Context(), offerID, &req)
 	if err != nil {
 		h.logger.Error("Failed to change offer status", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

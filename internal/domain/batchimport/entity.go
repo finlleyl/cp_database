@@ -57,16 +57,16 @@ type CreateImportJobRequest struct {
 
 // ImportTradesRequest represents the request to import trades
 type ImportTradesRequest struct {
-	StrategyUUID string `form:"strategy_uuid" binding:"required"`
-	AccountID    int64  `form:"account_id" binding:"required"`
-	FileFormat   string `form:"file_format" binding:"required,oneof=csv json"`
+	StrategyID int64  `form:"strategy_id" binding:"required"`
+	AccountID  int64  `form:"account_id" binding:"required"`
+	FileFormat string `form:"file_format" binding:"required,oneof=csv json"`
 }
 
 // ImportTradesParameters represents parameters for trade import (stored as JSON metadata)
 type ImportTradesParameters struct {
-	StrategyUUID string `json:"strategy_uuid"`
-	AccountID    int64  `json:"account_id"`
-	FileFormat   string `json:"file_format"`
+	StrategyID int64  `json:"strategy_id"`
+	AccountID  int64  `json:"account_id"`
+	FileFormat string `json:"file_format"`
 }
 
 // JobFilter represents filter parameters for import job search

@@ -41,7 +41,7 @@ func (u *useCase) Create(ctx context.Context, req *CreateSubscriptionRequest) (*
 	// 6. Create audit log
 	u.logger.Info("UseCase: Creating subscription",
 		zap.Int64("investor_account_id", req.InvestorAccountID),
-		zap.String("offer_uuid", req.OfferUUID.String()))
+		zap.Int64("offer_id", req.OfferID))
 
 	subscription, err := u.repo.Create(ctx, req)
 	if err != nil {

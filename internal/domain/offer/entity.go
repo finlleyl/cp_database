@@ -4,55 +4,46 @@ import (
 	"time"
 
 	"github.com/finlleyl/cp_database/internal/domain/common"
-	"github.com/google/uuid"
 )
 
 // Offer represents a strategy's offer for investors
 type Offer struct {
-	ID                     int64              `json:"id" db:"id"`
-	StrategyUUID           uuid.UUID          `json:"strategy_uuid" db:"strategy_uuid"`
-	Name                   string             `json:"name" db:"name"`
-	PerformanceFee         float64            `json:"performance_fee" db:"performance_fee"`
-	PerformanceFeeInterval common.FeeInterval `json:"performance_fee_interval" db:"performance_fee_interval"`
-	ManagementFee          float64            `json:"management_fee" db:"management_fee"`
-	ManagementFeeInterval  common.FeeInterval `json:"management_fee_interval" db:"management_fee_interval"`
-	RegistrationFee        float64            `json:"registration_fee" db:"registration_fee"`
-	Status                 common.OfferStatus `json:"status" db:"status"`
-	StatusReason           string             `json:"status_reason" db:"status_reason"`
-	CreatedAt              time.Time          `json:"created_at" db:"created_at"`
-	UpdatedAt              time.Time          `json:"updated_at" db:"updated_at"`
+	ID                    int64              `json:"id" db:"id"`
+	StrategyID            int64              `json:"strategy_id" db:"strategy_id"`
+	Name                  string             `json:"name" db:"name"`
+	Status                common.OfferStatus `json:"status" db:"status"`
+	PerformanceFeePercent *float64           `json:"performance_fee_percent" db:"performance_fee_percent"`
+	ManagementFeePercent  *float64           `json:"management_fee_percent" db:"management_fee_percent"`
+	RegistrationFeeAmount *float64           `json:"registration_fee_amount" db:"registration_fee_amount"`
+	CreatedAt             time.Time          `json:"created_at" db:"created_at"`
+	UpdatedAt             time.Time          `json:"updated_at" db:"updated_at"`
 }
 
 // CreateOfferRequest represents the request to create a new offer
 type CreateOfferRequest struct {
-	StrategyID             int64              `json:"strategy_id" binding:"required"`
-	Name                   string             `json:"name" binding:"required"`
-	PerformanceFee         float64            `json:"performance_fee" binding:"gte=0,lte=100"`
-	PerformanceFeeInterval common.FeeInterval `json:"performance_fee_interval" binding:"required,oneof=daily weekly monthly"`
-	ManagementFee          float64            `json:"management_fee" binding:"gte=0,lte=100"`
-	ManagementFeeInterval  common.FeeInterval `json:"management_fee_interval" binding:"required,oneof=daily weekly monthly"`
-	RegistrationFee        float64            `json:"registration_fee" binding:"gte=0"`
+	StrategyID            int64    `json:"strategy_id" binding:"required"`
+	Name                  string   `json:"name" binding:"required"`
+	PerformanceFeePercent *float64 `json:"performance_fee_percent"`
+	ManagementFeePercent  *float64 `json:"management_fee_percent"`
+	RegistrationFeeAmount *float64 `json:"registration_fee_amount"`
 }
 
 // UpdateOfferRequest represents the request to update an offer
 type UpdateOfferRequest struct {
-	Name                   *string             `json:"name,omitempty"`
-	PerformanceFee         *float64            `json:"performance_fee,omitempty"`
-	PerformanceFeeInterval *common.FeeInterval `json:"performance_fee_interval,omitempty"`
-	ManagementFee          *float64            `json:"management_fee,omitempty"`
-	ManagementFeeInterval  *common.FeeInterval `json:"management_fee_interval,omitempty"`
-	RegistrationFee        *float64            `json:"registration_fee,omitempty"`
+	Name                  *string  `json:"name,omitempty"`
+	PerformanceFeePercent *float64 `json:"performance_fee_percent,omitempty"`
+	ManagementFeePercent  *float64 `json:"management_fee_percent,omitempty"`
+	RegistrationFeeAmount *float64 `json:"registration_fee_amount,omitempty"`
 }
 
 // ChangeStatusRequest represents the request to change offer status
 type ChangeStatusRequest struct {
-	Status       common.OfferStatus `json:"status" binding:"required,oneof=active archived deleted"`
-	StatusReason string             `json:"status_reason"`
+	Status common.OfferStatus `json:"status" binding:"required,oneof=active archived deleted"`
 }
 
 // OfferFilter represents filter parameters for offer search
 type OfferFilter struct {
-	StrategyUUID uuid.UUID          `form:"strategy_uuid"`
-	Status       common.OfferStatus `form:"status"`
+	StrategyID int64              `form:"strategy_id"`
+	Status     common.OfferStatus `form:"status"`
 	common.Pagination
 }

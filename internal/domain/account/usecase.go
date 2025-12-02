@@ -37,7 +37,7 @@ func (u *useCase) Create(ctx context.Context, req *CreateAccountRequest) (*Accou
 	// 4. Create audit log
 	u.logger.Info("UseCase: Creating account",
 		zap.Int64("user_id", req.UserID),
-		zap.String("mt_login", req.MTLogin))
+		zap.String("name", req.Name))
 
 	account, err := u.repo.Create(ctx, req)
 	if err != nil {

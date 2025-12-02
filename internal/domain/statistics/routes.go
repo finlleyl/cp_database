@@ -1,16 +1,13 @@
 package statistics
 
-import (
-	"github.com/gin-gonic/gin"
-)
+import "github.com/gin-gonic/gin"
 
-// RegisterRoutes registers statistics routes to the given router group
-func RegisterRoutes(rg *gin.RouterGroup, h *Handler) {
-	stats := rg.Group("/statistics")
+// RegisterRoutes registers all statistics routes
+func RegisterRoutes(router *gin.RouterGroup, handler *Handler) {
+	statistics := router.Group("/statistics")
 	{
-		stats.GET("/strategies/leaderboard", h.GetStrategyLeaderboard)
-		stats.GET("/investor-portfolio", h.GetInvestorPortfolio)
-		stats.GET("/master-income", h.GetMasterIncome)
-		stats.GET("/accounts/:account_id", h.GetAccountStatistics)
+		statistics.GET("/strategies/leaderboard", handler.GetStrategyLeaderboard)
+		statistics.GET("/investor-portfolio", handler.GetInvestorPortfolio)
+		statistics.GET("/master-income", handler.GetMasterIncome)
 	}
 }

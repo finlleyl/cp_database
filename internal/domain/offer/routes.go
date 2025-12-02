@@ -10,8 +10,8 @@ func RegisterRoutes(rg *gin.RouterGroup, h *Handler) {
 	{
 		offers.POST("", h.Create)
 		offers.GET("", h.List)
-		offers.GET("/:uuid", h.GetByUUID)
-		offers.PUT("/:uuid", h.Update)
-		offers.POST("/:uuid/status", h.ChangeStatus)
+		offers.GET("/:id", h.GetByID)
+		offers.PUT("/:id", h.Update)
+		offers.POST("/:id/status", h.ChangeStatus)
 	}
 }

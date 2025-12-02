@@ -2,6 +2,7 @@ package strategy
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"math"
 	"strings"
@@ -34,18 +35,44 @@ func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 }
 
 func (r *repository) Create(ctx context.Context, req *CreateStrategyRequest) (*Strategy, error) {
-	// TODO: Implement strategy creation with initial status = preparing
-	r.logger.Info("Creating strategy", zap.String("nickname", req.Nickname), zap.Int64("account_id", req.AccountID))
-	return nil, fmt.Errorf("not implemented")
+	query := `
+		INSERT INTO strategies (master_user_id, master_account_id, title, description, status)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id, master_user_id, master_account_id, title, description, status, created_at, updated_at
+	`
+
+	var strategy Strategy
+	err := r.db.QueryRowxContext(ctx, query,
+		req.UserID,
+		req.AccountID,
+		req.Nickname,
+		req.Summary,
+		common.StrategyStatusPreparing,
+	).StructScan(&strategy)
+	if err != nil {
+		r.logger.Error("Failed to create strategy",
+			zap.String("nickname", req.Nickname),
+			zap.Int64("account_id", req.AccountID),
+			zap.Error(err))
+		return nil, fmt.Errorf("create strategy: %w", err)
+	}
+
+	r.logger.Info("Strategy created",
+		zap.Int64("id", strategy.ID),
+		zap.String("title", strategy.Title))
+
+	return &strategy, nil
 }
 
 func (r *repository) GetByID(ctx context.Context, id int64) (*GetStrategyByIDResponse, error) {
-	query := `
-		SELECT * from vw_strategy_performance where id = $1
-	`
+	query := `SELECT * FROM vw_strategy_performance WHERE id = $1`
+
 	var response GetStrategyByIDResponse
 	err := r.db.GetContext(ctx, &response, query, id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		r.logger.Error("Failed to get strategy by ID", zap.Error(err))
 		return nil, fmt.Errorf("failed to get strategy by ID: %w", err)
 	}
@@ -120,27 +147,132 @@ func (r *repository) List(ctx context.Context, filter *StrategyFilter) (*common.
 }
 
 func (r *repository) Update(ctx context.Context, id int64, req *UpdateStrategyRequest) (*Strategy, error) {
-	// TODO: Implement strategy update
-	r.logger.Info("Updating strategy", zap.Int64("id", id))
-	return nil, fmt.Errorf("not implemented")
+	var (
+		setClauses []string
+		args       []interface{}
+		argIndex   = 1
+	)
+
+	if req.Nickname != nil {
+		setClauses = append(setClauses, fmt.Sprintf("title = $%d", argIndex))
+		args = append(args, *req.Nickname)
+		argIndex++
+	}
+
+	if req.Summary != nil {
+		setClauses = append(setClauses, fmt.Sprintf("description = $%d", argIndex))
+		args = append(args, *req.Summary)
+		argIndex++
+	}
+
+	if len(setClauses) == 0 {
+		// No updates, just return existing strategy
+		strategy, err := r.getStrategyByID(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		return strategy, nil
+	}
+
+	setClauses = append(setClauses, "updated_at = now()")
+	args = append(args, id)
+
+	query := fmt.Sprintf(`
+		UPDATE strategies
+		SET %s
+		WHERE id = $%d
+		RETURNING id, master_user_id, master_account_id, title, description, status, created_at, updated_at
+	`, strings.Join(setClauses, ", "), argIndex)
+
+	var strategy Strategy
+	err := r.db.QueryRowxContext(ctx, query, args...).StructScan(&strategy)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("strategy not found: %d", id)
+		}
+		r.logger.Error("Failed to update strategy",
+			zap.Int64("id", id),
+			zap.Error(err))
+		return nil, fmt.Errorf("update strategy: %w", err)
+	}
+
+	r.logger.Info("Strategy updated", zap.Int64("id", strategy.ID))
+
+	return &strategy, nil
 }
 
 func (r *repository) ChangeStatus(ctx context.Context, id int64, req *ChangeStatusRequest) (*Strategy, error) {
-	// TODO: Implement strategy status change with status_reason
-	r.logger.Info("Changing strategy status", zap.Int64("id", id), zap.String("status", string(req.Status)))
-	return nil, fmt.Errorf("not implemented")
+	query := `
+		UPDATE strategies
+		SET status = $1, updated_at = now()
+		WHERE id = $2
+		RETURNING id, master_user_id, master_account_id, title, description, status, created_at, updated_at
+	`
+
+	var strategy Strategy
+	err := r.db.QueryRowxContext(ctx, query, req.Status, id).StructScan(&strategy)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("strategy not found: %d", id)
+		}
+		r.logger.Error("Failed to change strategy status",
+			zap.Int64("id", id),
+			zap.String("status", string(req.Status)),
+			zap.Error(err))
+		return nil, fmt.Errorf("change strategy status: %w", err)
+	}
+
+	r.logger.Info("Strategy status changed",
+		zap.Int64("id", strategy.ID),
+		zap.String("status", string(strategy.Status)))
+
+	return &strategy, nil
 }
 
 func (r *repository) GetByAccountID(ctx context.Context, accountID int64) (*Strategy, error) {
-	// TODO: Implement get strategy by account ID
-	r.logger.Info("Getting strategy by account ID", zap.Int64("account_id", accountID))
-	return nil, fmt.Errorf("not implemented")
+	query := `
+		SELECT id, master_user_id, master_account_id, title, description, status, created_at, updated_at
+		FROM strategies
+		WHERE master_account_id = $1
+		ORDER BY created_at DESC
+		LIMIT 1
+	`
+
+	var strategy Strategy
+	err := r.db.GetContext(ctx, &strategy, query, accountID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		r.logger.Error("Failed to get strategy by account ID",
+			zap.Int64("account_id", accountID),
+			zap.Error(err))
+		return nil, fmt.Errorf("get strategy by account id: %w", err)
+	}
+
+	return &strategy, nil
 }
 
 func (r *repository) GetActiveByID(ctx context.Context, id int64) (*Strategy, error) {
-	// TODO: Implement get active strategy by UUID
-	r.logger.Info("Getting active strategy by ID", zap.Int64("id", id))
-	return nil, fmt.Errorf("not implemented")
+	query := `
+		SELECT id, master_user_id, master_account_id, title, description, status, created_at, updated_at
+		FROM strategies
+		WHERE id = $1 AND status = 'active'
+	`
+
+	var strategy Strategy
+	err := r.db.GetContext(ctx, &strategy, query, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		r.logger.Error("Failed to get active strategy by ID",
+			zap.Int64("id", id),
+			zap.Error(err))
+		return nil, fmt.Errorf("get active strategy by id: %w", err)
+	}
+
+	return &strategy, nil
 }
 
 func (r *repository) GetSummary(ctx context.Context, id int64) (*StrategySummary, error) {
@@ -157,4 +289,24 @@ func (r *repository) GetSummary(ctx context.Context, id int64) (*StrategySummary
 		StrategyID:  id,
 		TotalProfit: totalProfit,
 	}, nil
+}
+
+// getStrategyByID is a helper to get raw strategy without view
+func (r *repository) getStrategyByID(ctx context.Context, id int64) (*Strategy, error) {
+	query := `
+		SELECT id, master_user_id, master_account_id, title, description, status, created_at, updated_at
+		FROM strategies
+		WHERE id = $1
+	`
+
+	var strategy Strategy
+	err := r.db.GetContext(ctx, &strategy, query, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("get strategy by id: %w", err)
+	}
+
+	return &strategy, nil
 }
