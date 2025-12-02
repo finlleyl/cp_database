@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS fn_get_investor_portfolio(BIGINT);

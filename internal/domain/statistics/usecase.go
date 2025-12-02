@@ -26,19 +26,12 @@ func NewUseCase(repo Repository, logger *zap.Logger) UseCase {
 }
 
 func (u *useCase) GetStrategyLeaderboard(ctx context.Context, req *LeaderboardRequest) ([]*StrategyLeaderboard, error) {
-	// TODO: Implement strategy leaderboard business logic
-	// Uses fn_get_strategy_leaderboard database function
-	// Default period: month, default limit: 20
-	if req.Period == "" {
-		req.Period = PeriodMonth
-	}
+	// Default limit: 10
 	if req.Limit <= 0 {
-		req.Limit = 20
+		req.Limit = 10
 	}
 
-	u.logger.Info("UseCase: Getting strategy leaderboard",
-		zap.String("period", string(req.Period)),
-		zap.Int("limit", req.Limit))
+	u.logger.Info("UseCase: Getting strategy leaderboard", zap.Int("limit", req.Limit))
 
 	leaderboard, err := u.repo.GetStrategyLeaderboard(ctx, req)
 	if err != nil {
@@ -49,9 +42,6 @@ func (u *useCase) GetStrategyLeaderboard(ctx context.Context, req *LeaderboardRe
 }
 
 func (u *useCase) GetInvestorPortfolio(ctx context.Context, req *InvestorPortfolioRequest) (*InvestorPortfolio, error) {
-	// TODO: Implement investor portfolio business logic
-	// Uses fn_get_investor_portfolio database function
-	// Returns aggregated portfolio data with subscriptions breakdown
 	u.logger.Info("UseCase: Getting investor portfolio", zap.Int64("user_id", req.UserID))
 
 	portfolio, err := u.repo.GetInvestorPortfolio(ctx, req)

@@ -17,6 +17,7 @@ type UseCase interface {
 	List(ctx context.Context, filter *StrategyFilter) (*common.PaginatedResult[GetStrategyByIDResponse], error)
 	Update(ctx context.Context, id int64, req *UpdateStrategyRequest) (*Strategy, error)
 	ChangeStatus(ctx context.Context, id int64, req *ChangeStatusRequest) (*Strategy, error)
+	GetSummary(ctx context.Context, id int64) (*StrategySummary, error)
 }
 
 type useCase struct {
@@ -160,4 +161,15 @@ func (u *useCase) ChangeStatus(ctx context.Context, id int64, req *ChangeStatusR
 	})
 
 	return strategy, nil
+}
+
+func (u *useCase) GetSummary(ctx context.Context, id int64) (*StrategySummary, error) {
+	u.logger.Info("UseCase: Getting strategy summary", zap.Int64("id", id))
+
+	summary, err := u.repo.GetSummary(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("get strategy summary: %w", err)
+	}
+
+	return summary, nil
 }

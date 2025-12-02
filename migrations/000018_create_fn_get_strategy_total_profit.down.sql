@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS fn_get_strategy_total_profit(BIGINT);

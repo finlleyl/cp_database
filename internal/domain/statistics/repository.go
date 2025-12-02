@@ -29,17 +29,34 @@ func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 }
 
 func (r *repository) GetStrategyLeaderboard(ctx context.Context, req *LeaderboardRequest) ([]*StrategyLeaderboard, error) {
-	// TODO: Implement using fn_get_strategy_leaderboard database function
-	r.logger.Info("Getting strategy leaderboard",
-		zap.String("period", string(req.Period)),
-		zap.Int("limit", req.Limit))
-	return nil, fmt.Errorf("not implemented")
+	r.logger.Info("Getting strategy leaderboard", zap.Int("limit", req.Limit))
+
+	query := `SELECT strategy_id, title, total_profit, total_commissions, active_subscriptions 
+			  FROM fn_get_strategy_leaderboard($1)`
+
+	var leaderboard []*StrategyLeaderboard
+	if err := r.db.SelectContext(ctx, &leaderboard, query, req.Limit); err != nil {
+		return nil, fmt.Errorf("select strategy leaderboard: %w", err)
+	}
+
+	return leaderboard, nil
 }
 
 func (r *repository) GetInvestorPortfolio(ctx context.Context, req *InvestorPortfolioRequest) (*InvestorPortfolio, error) {
-	// TODO: Implement using fn_get_investor_portfolio database function
 	r.logger.Info("Getting investor portfolio", zap.Int64("user_id", req.UserID))
-	return nil, fmt.Errorf("not implemented")
+
+	query := `SELECT subscription_id, strategy_id, strategy_title, total_profit, copied_trades_count 
+			  FROM fn_get_investor_portfolio($1)`
+
+	var items []PortfolioItem
+	if err := r.db.SelectContext(ctx, &items, query, req.UserID); err != nil {
+		return nil, fmt.Errorf("select investor portfolio: %w", err)
+	}
+
+	return &InvestorPortfolio{
+		UserID:        req.UserID,
+		Subscriptions: items,
+	}, nil
 }
 
 func (r *repository) GetMasterIncome(ctx context.Context, req *MasterIncomeRequest) (*MasterIncome, error) {

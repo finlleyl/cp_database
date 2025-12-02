@@ -20,6 +20,7 @@ type Repository interface {
 	ChangeStatus(ctx context.Context, id int64, req *ChangeStatusRequest) (*Strategy, error)
 	GetByAccountID(ctx context.Context, accountID int64) (*Strategy, error)
 	GetActiveByID(ctx context.Context, id int64) (*Strategy, error)
+	GetSummary(ctx context.Context, id int64) (*StrategySummary, error)
 }
 
 type repository struct {
@@ -140,4 +141,20 @@ func (r *repository) GetActiveByID(ctx context.Context, id int64) (*Strategy, er
 	// TODO: Implement get active strategy by UUID
 	r.logger.Info("Getting active strategy by ID", zap.Int64("id", id))
 	return nil, fmt.Errorf("not implemented")
+}
+
+func (r *repository) GetSummary(ctx context.Context, id int64) (*StrategySummary, error) {
+	r.logger.Info("Getting strategy summary", zap.Int64("id", id))
+
+	query := `SELECT fn_get_strategy_total_profit($1) as total_profit`
+
+	var totalProfit float64
+	if err := r.db.GetContext(ctx, &totalProfit, query, id); err != nil {
+		return nil, fmt.Errorf("get strategy total profit: %w", err)
+	}
+
+	return &StrategySummary{
+		StrategyID:  id,
+		TotalProfit: totalProfit,
+	}, nil
 }

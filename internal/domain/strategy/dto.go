@@ -52,3 +52,10 @@ type StrategyFilter struct {
 	RiskScore      *int                  `form:"risk_score"`
 	common.Pagination
 }
+
+// StrategySummary represents strategy summary with total profit
+// Uses fn_get_strategy_total_profit function
+type StrategySummary struct {
+	StrategyID  int64   `json:"strategy_id"`
+	TotalProfit float64 `json:"total_profit"`
+}

@@ -124,3 +124,21 @@ func (h *Handler) ChangeStatus(c *gin.Context) {
 
 	c.JSON(http.StatusOK, strategy)
 }
+
+// GetSummary handles GET /api/v1/strategies/:id/summary
+func (h *Handler) GetSummary(c *gin.Context) {
+	strategyID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid strategy id"})
+		return
+	}
+
+	summary, err := h.useCase.GetSummary(c.Request.Context(), strategyID)
+	if err != nil {
+		h.logger.Error("Failed to get strategy summary", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, summary)
+}

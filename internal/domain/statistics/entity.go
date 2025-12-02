@@ -42,40 +42,30 @@ type AccountStatistics struct {
 }
 
 // StrategyLeaderboard represents a strategy in the leaderboard
+// Matches fn_get_strategy_leaderboard return type
 type StrategyLeaderboard struct {
-	Rank           int       `json:"rank" db:"rank"`
-	StrategyUUID   uuid.UUID `json:"strategy_uuid" db:"strategy_uuid"`
-	Nickname       string    `json:"nickname" db:"nickname"`
-	AvatarURL      string    `json:"avatar_url" db:"avatar_url"`
-	ROI            float64   `json:"roi" db:"roi"`
-	MaxDrawdownPct float64   `json:"max_drawdown_pct" db:"max_drawdown_pct"`
-	TotalTrades    int       `json:"total_trades" db:"total_trades"`
-	WinRate        float64   `json:"win_rate" db:"win_rate"`
-	Subscribers    int       `json:"subscribers" db:"subscribers"`
-	RiskScore      int       `json:"risk_score" db:"risk_score"`
+	StrategyID          int64   `json:"strategy_id" db:"strategy_id"`
+	Title               string  `json:"title" db:"title"`
+	TotalProfit         float64 `json:"total_profit" db:"total_profit"`
+	TotalCommissions    float64 `json:"total_commissions" db:"total_commissions"`
+	ActiveSubscriptions int     `json:"active_subscriptions" db:"active_subscriptions"`
 }
 
 // InvestorPortfolio represents an investor's portfolio statistics
+// Response wrapper for investor portfolio endpoint
 type InvestorPortfolio struct {
-	UserID              int64           `json:"user_id" db:"user_id"`
-	TotalInvested       float64         `json:"total_invested" db:"total_invested"`
-	TotalProfit         float64         `json:"total_profit" db:"total_profit"`
-	TotalFeesPaid       float64         `json:"total_fees_paid" db:"total_fees_paid"`
-	NetProfit           float64         `json:"net_profit" db:"net_profit"`
-	ActiveSubscriptions int             `json:"active_subscriptions" db:"active_subscriptions"`
-	ROI                 float64         `json:"roi" db:"roi"`
-	Subscriptions       []PortfolioItem `json:"subscriptions"`
+	UserID        int64           `json:"user_id"`
+	Subscriptions []PortfolioItem `json:"subscriptions"`
 }
 
 // PortfolioItem represents a single subscription in the portfolio
+// Matches fn_get_investor_portfolio return type
 type PortfolioItem struct {
-	SubscriptionUUID uuid.UUID `json:"subscription_uuid" db:"subscription_uuid"`
-	StrategyNickname string    `json:"strategy_nickname" db:"strategy_nickname"`
-	Invested         float64   `json:"invested" db:"invested"`
-	CurrentValue     float64   `json:"current_value" db:"current_value"`
-	Profit           float64   `json:"profit" db:"profit"`
-	ROI              float64   `json:"roi" db:"roi"`
-	FeesPaid         float64   `json:"fees_paid" db:"fees_paid"`
+	SubscriptionID    int64   `json:"subscription_id" db:"subscription_id"`
+	StrategyID        int64   `json:"strategy_id" db:"strategy_id"`
+	StrategyTitle     string  `json:"strategy_title" db:"strategy_title"`
+	TotalProfit       float64 `json:"total_profit" db:"total_profit"`
+	CopiedTradesCount int64   `json:"copied_trades_count" db:"copied_trades_count"`
 }
 
 // MasterIncome represents a master's income from commissions

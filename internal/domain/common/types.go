@@ -63,13 +63,23 @@ const (
 	SubscriptionStatusDeleted   SubscriptionStatus = "deleted"
 )
 
+// ImportJobStatus matches import_job_status enum in DB
 type ImportJobStatus string
 
 const (
-	ImportJobStatusPending    ImportJobStatus = "pending"
-	ImportJobStatusProcessing ImportJobStatus = "processing"
-	ImportJobStatusCompleted  ImportJobStatus = "completed"
-	ImportJobStatusFailed     ImportJobStatus = "failed"
+	ImportJobStatusPending ImportJobStatus = "pending"
+	ImportJobStatusRunning ImportJobStatus = "running"
+	ImportJobStatusSuccess ImportJobStatus = "success"
+	ImportJobStatusFailed  ImportJobStatus = "failed"
+)
+
+// AuditOperation matches audit_operation enum in DB
+type AuditOperation string
+
+const (
+	AuditOperationInsert AuditOperation = "insert"
+	AuditOperationUpdate AuditOperation = "update"
+	AuditOperationDelete AuditOperation = "delete"
 )
 
 type UserRole string

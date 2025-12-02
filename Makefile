@@ -6,9 +6,15 @@ CMD_PATH := ./cmd/app
 DOCKER_COMPOSE := docker-compose --env-file .env -f infra/docker-compose.yml
 DOCKERFILE := infra/Dockerfile
 
-DB_USER        ?= $(shell grep POSTGRES_USER .env | cut -d '=' -f2)
-DB_PASSWORD    ?= $(shell grep POSTGRES_PASSWORD .env | cut -d '=' -f2)
-DB_NAME        ?= $(shell grep POSTGRES_DB .env | cut -d '=' -f2)
+ifeq ($(OS),Windows_NT)
+    DB_USER        ?= $(shell powershell -NoProfile -Command "(Get-Content .env | Where-Object {$$_ -match '^POSTGRES_USER='}) -replace '^POSTGRES_USER=',''")
+    DB_PASSWORD    ?= $(shell powershell -NoProfile -Command "(Get-Content .env | Where-Object {$$_ -match '^POSTGRES_PASSWORD='}) -replace '^POSTGRES_PASSWORD=',''")
+    DB_NAME        ?= $(shell powershell -NoProfile -Command "(Get-Content .env | Where-Object {$$_ -match '^POSTGRES_DB='}) -replace '^POSTGRES_DB=',''")
+else
+    DB_USER        ?= $(shell grep POSTGRES_USER .env | cut -d '=' -f2)
+    DB_PASSWORD    ?= $(shell grep POSTGRES_PASSWORD .env | cut -d '=' -f2)
+    DB_NAME        ?= $(shell grep POSTGRES_DB .env | cut -d '=' -f2)
+endif
 DB_DSN := postgres://$(DB_USER):$(DB_PASSWORD)@localhost:5432/$(DB_NAME)?sslmode=disable
 
 deps: ## Установить зависимости

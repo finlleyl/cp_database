@@ -6,8 +6,7 @@ import (
 
 // LeaderboardRequest represents the request for strategy leaderboard
 type LeaderboardRequest struct {
-	Period Period `form:"period" binding:"omitempty,oneof=day week month year all"`
-	Limit  int    `form:"limit" binding:"omitempty,min=1,max=100"`
+	Limit int `form:"limit" binding:"omitempty,min=1,max=100"`
 }
 
 // InvestorPortfolioRequest represents the request for investor portfolio
