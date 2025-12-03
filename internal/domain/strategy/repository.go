@@ -15,6 +15,7 @@ import (
 type Repository interface {
 	Create(ctx context.Context, req *CreateStrategyRequest) (*Strategy, error)
 	GetByID(ctx context.Context, id int64) (*GetStrategyByIDResponse, error)
+	GetBaseByID(ctx context.Context, id int64) (*Strategy, error)
 	List(ctx context.Context, filter *StrategyFilter) (*common.PaginatedResult[GetStrategyByIDResponse], error)
 	Update(ctx context.Context, id int64, req *UpdateStrategyRequest) (*Strategy, error)
 	ChangeStatus(ctx context.Context, id int64, req *ChangeStatusRequest) (*Strategy, error)
@@ -164,8 +165,7 @@ func (r *repository) Update(ctx context.Context, id int64, req *UpdateStrategyRe
 	}
 
 	if len(setClauses) == 0 {
-
-		strategy, err := r.getStrategyByID(ctx, id)
+		strategy, err := r.GetBaseByID(ctx, id)
 		if err != nil {
 			return nil, err
 		}
@@ -289,7 +289,7 @@ func (r *repository) GetSummary(ctx context.Context, id int64) (*StrategySummary
 	}, nil
 }
 
-func (r *repository) getStrategyByID(ctx context.Context, id int64) (*Strategy, error) {
+func (r *repository) GetBaseByID(ctx context.Context, id int64) (*Strategy, error) {
 	query := `
 		SELECT id, master_user_id, master_account_id, title, description, status, created_at, updated_at
 		FROM strategies
@@ -302,7 +302,10 @@ func (r *repository) getStrategyByID(ctx context.Context, id int64) (*Strategy, 
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
-		return nil, fmt.Errorf("get strategy by id: %w", err)
+		r.logger.Error("Failed to get strategy base by ID",
+			zap.Int64("id", id),
+			zap.Error(err))
+		return nil, fmt.Errorf("get strategy base by id: %w", err)
 	}
 
 	return &strategy, nil

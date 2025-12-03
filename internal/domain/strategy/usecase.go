@@ -78,7 +78,7 @@ func (u *useCase) Update(ctx context.Context, id int64, req *UpdateStrategyReque
 
 	u.logger.Info("UseCase: Updating strategy", zap.Int64("id", id))
 
-	oldStrategy, err := u.repo.GetByID(ctx, id)
+	oldStrategy, err := u.repo.GetBaseByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("get strategy: %w", err)
 	}
