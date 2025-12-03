@@ -13,6 +13,8 @@ import (
 	"github.com/finlleyl/cp_database/internal/domain/trade"
 	"github.com/finlleyl/cp_database/internal/domain/user"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type RouteParams struct {
@@ -39,6 +41,9 @@ func RegisterRoutes(r *gin.Engine, params RouteParams) {
 
 	r.GET("/health", healthRoute)
 	r.GET("/ping", pingRoute)
+
+	// Swagger UI
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	v1 := r.Group("/api/v1")
 	{

@@ -71,3 +71,9 @@ migrate-up:
 
 migrate-down:
 	migrate -path=migrations -database "$(DB_DSN)" down -all
+
+swagger: ## Сгенерировать Swagger документацию
+	swag init -g cmd/app/main.go -o docs
+
+swagger-fmt: ## Отформатировать Swagger аннотации
+	swag fmt

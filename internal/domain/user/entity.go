@@ -33,3 +33,13 @@ type UserFilter struct {
 	Role common.UserRole `form:"role"`
 	common.Pagination
 }
+
+// UserListResponse представляет пагинированный ответ со списком пользователей
+// @Description Пагинированный список пользователей
+type UserListResponse struct {
+	Data       []User `json:"data"`
+	Total      int64  `json:"total"`
+	Page       int    `json:"page"`
+	Limit      int    `json:"limit"`
+	TotalPages int    `json:"total_pages"`
+}
