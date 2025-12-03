@@ -100,5 +100,6 @@ var Module = fx.Options(
 	),
 	fx.Invoke(
 		RegisterAllRoutes,
+		func(*http.Server) {},
 	),
 )
