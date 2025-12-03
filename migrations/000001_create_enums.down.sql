@@ -1,4 +1,4 @@
--- 0001_create_enums.down.sql
+
 
 DROP TYPE audit_operation;
 DROP TYPE import_job_status;

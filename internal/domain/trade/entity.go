@@ -6,7 +6,6 @@ import (
 	"github.com/finlleyl/cp_database/internal/domain/common"
 )
 
-// TradeDirection represents the direction of trade
 type TradeDirection string
 
 const (
@@ -14,7 +13,6 @@ const (
 	TradeDirectionSell TradeDirection = "sell"
 )
 
-// Trade represents a master's trade
 type Trade struct {
 	ID              int64          `json:"id" db:"id"`
 	StrategyID      int64          `json:"strategy_id" db:"strategy_id"`
@@ -32,7 +30,6 @@ type Trade struct {
 	CreatedAt       time.Time      `json:"created_at" db:"created_at"`
 }
 
-// CopiedTrade represents a trade copied to an investor's account
 type CopiedTrade struct {
 	ID                int64      `json:"id" db:"id"`
 	TradeID           int64      `json:"trade_id" db:"trade_id"`
@@ -47,7 +44,6 @@ type CopiedTrade struct {
 	CreatedAt         time.Time  `json:"created_at" db:"created_at"`
 }
 
-// CreateTradeRequest represents the request to create a new trade
 type CreateTradeRequest struct {
 	StrategyID      int64          `json:"strategy_id" binding:"required"`
 	MasterAccountID int64          `json:"master_account_id" binding:"required"`
@@ -58,7 +54,6 @@ type CreateTradeRequest struct {
 	OpenPrice       float64        `json:"open_price" binding:"required,gt=0"`
 }
 
-// CreateCopiedTradeRequest represents the request to create a copied trade
 type CreateCopiedTradeRequest struct {
 	TradeID           int64     `json:"trade_id" binding:"required"`
 	SubscriptionID    int64     `json:"subscription_id" binding:"required"`
@@ -67,21 +62,18 @@ type CreateCopiedTradeRequest struct {
 	OpenTime          time.Time `json:"open_time" binding:"required"`
 }
 
-// TradeFilter represents filter parameters for trade search
 type TradeFilter struct {
 	StrategyID int64 `form:"strategy_id"`
 	common.TimeRange
 	common.Pagination
 }
 
-// CopiedTradeFilter represents filter parameters for copied trade search
 type CopiedTradeFilter struct {
 	SubscriptionID int64 `form:"subscription_id"`
 	TradeID        int64 `form:"trade_id"`
 	common.Pagination
 }
 
-// CopyTradeRequest represents the request to manually trigger trade copying
 type CopyTradeRequest struct {
 	SubscriptionIDs []int64 `json:"subscription_ids,omitempty"`
 }

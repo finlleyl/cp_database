@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// Pagination represents pagination parameters for list queries
 type Pagination struct {
 	Page   int `json:"page" form:"page"`
 	Limit  int `json:"limit" form:"limit"`
@@ -26,7 +25,6 @@ func (p *Pagination) SetDefaults() {
 	p.Offset = (p.Page - 1) * p.Limit
 }
 
-// PaginatedResult represents a paginated response
 type PaginatedResult[T any] struct {
 	Data       []T   `json:"data"`
 	Total      int64 `json:"total"`
@@ -35,7 +33,6 @@ type PaginatedResult[T any] struct {
 	TotalPages int   `json:"total_pages"`
 }
 
-// Status types for various entities
 type StrategyStatus string
 
 const (
@@ -63,7 +60,6 @@ const (
 	SubscriptionStatusDeleted   SubscriptionStatus = "deleted"
 )
 
-// ImportJobStatus matches import_job_status enum in DB
 type ImportJobStatus string
 
 const (
@@ -73,7 +69,6 @@ const (
 	ImportJobStatusFailed  ImportJobStatus = "failed"
 )
 
-// AuditOperation matches audit_operation enum in DB
 type AuditOperation string
 
 const (
@@ -89,7 +84,6 @@ const (
 	UserRoleInvestor UserRole = "investor"
 )
 
-// FeeInterval represents fee calculation interval
 type FeeInterval string
 
 const (
@@ -98,12 +92,10 @@ const (
 	FeeIntervalMonthly FeeInterval = "monthly"
 )
 
-// NewUUID generates a new UUID
 func NewUUID() uuid.UUID {
 	return uuid.New()
 }
 
-// TimeRange represents a time range for queries
 type TimeRange struct {
 	From time.Time `json:"from" form:"from"`
 	To   time.Time `json:"to" form:"to"`

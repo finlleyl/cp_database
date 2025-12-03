@@ -6,8 +6,6 @@ import (
 	"github.com/finlleyl/cp_database/internal/domain/common"
 )
 
-// GetStrategyByIDResponse represents the response for getting strategy by ID
-// Contains aggregated statistics from vw_strategy_performance view
 type GetStrategyByIDResponse struct {
 	ID                  int64                 `json:"id" db:"id"`
 	Title               string                `json:"title" db:"title"`
@@ -20,7 +18,6 @@ type GetStrategyByIDResponse struct {
 	UpdatedAt           time.Time             `json:"updated_at" db:"updated_at"`
 }
 
-// CreateStrategyRequest represents the request to create a new strategy
 type CreateStrategyRequest struct {
 	AccountID        int64  `json:"account_id" binding:"required"`
 	UserID           int64  `json:"user_id" binding:"required"`
@@ -30,7 +27,6 @@ type CreateStrategyRequest struct {
 	AvatarURL        string `json:"avatar_url"`
 }
 
-// UpdateStrategyRequest represents the request to update a strategy
 type UpdateStrategyRequest struct {
 	Nickname         *string `json:"nickname,omitempty"`
 	Summary          *string `json:"summary,omitempty"`
@@ -38,13 +34,11 @@ type UpdateStrategyRequest struct {
 	AvatarURL        *string `json:"avatar_url,omitempty"`
 }
 
-// ChangeStatusRequest represents the request to change strategy status
 type ChangeStatusRequest struct {
 	Status       common.StrategyStatus `json:"status" binding:"required,oneof=active archived deleted"`
 	StatusReason string                `json:"status_reason"`
 }
 
-// StrategyFilter represents filter parameters for strategy search
 type StrategyFilter struct {
 	Status         common.StrategyStatus `form:"status"`
 	MinROI         *float64              `form:"min_roi"`
@@ -53,8 +47,6 @@ type StrategyFilter struct {
 	common.Pagination
 }
 
-// StrategySummary represents strategy summary with total profit
-// Uses fn_get_strategy_total_profit function
 type StrategySummary struct {
 	StrategyID  int64   `json:"strategy_id"`
 	TotalProfit float64 `json:"total_profit"`

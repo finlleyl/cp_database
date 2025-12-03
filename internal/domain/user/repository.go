@@ -12,7 +12,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// Repository defines the interface for user data operations
 type Repository interface {
 	Create(ctx context.Context, req *CreateUserRequest) (*User, error)
 	GetByID(ctx context.Context, id int64) (*User, error)
@@ -26,7 +25,6 @@ type repository struct {
 	logger *zap.Logger
 }
 
-// NewRepository creates a new user repository
 func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 	return &repository{db: db, logger: logger}
 }
@@ -102,7 +100,6 @@ func (r *repository) List(ctx context.Context, filter *UserFilter) (*common.Pagi
 		whereClause = "WHERE " + strings.Join(conditions, " AND ")
 	}
 
-	// Count total
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM users %s", whereClause)
 	var total int64
 	err := r.db.GetContext(ctx, &total, countQuery, args...)
@@ -111,7 +108,6 @@ func (r *repository) List(ctx context.Context, filter *UserFilter) (*common.Pagi
 		return nil, fmt.Errorf("count users: %w", err)
 	}
 
-	// Get data
 	query := fmt.Sprintf(`
 		SELECT id, name, email, role, created_at, updated_at
 		FROM users

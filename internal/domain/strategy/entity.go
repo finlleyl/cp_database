@@ -6,7 +6,6 @@ import (
 	"github.com/finlleyl/cp_database/internal/domain/common"
 )
 
-// Strategy represents a master's trading strategy
 type Strategy struct {
 	ID              int64                 `json:"id" db:"id"`
 	MasterUserID    int64                 `json:"master_user_id" db:"master_user_id"`

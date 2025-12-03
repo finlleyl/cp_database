@@ -11,15 +11,13 @@ import (
 
 func main() {
 	fx.New(
-		// Infrastructure modules
+
 		logger.Module,
 		config.Module,
 		repository.Module,
 
-		// Domain modules (all domains aggregated)
 		domain.Module,
 
-		// HTTP server module
 		httpserver.Module,
 	).Run()
 }

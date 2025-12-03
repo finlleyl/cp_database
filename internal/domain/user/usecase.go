@@ -9,7 +9,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// UseCase defines the interface for user business logic
 type UseCase interface {
 	Create(ctx context.Context, req *CreateUserRequest) (*User, error)
 	GetByID(ctx context.Context, id int64) (*User, error)
@@ -24,16 +23,12 @@ type useCase struct {
 	logger    *zap.Logger
 }
 
-// NewUseCase creates a new user use case
 func NewUseCase(repo Repository, auditRepo audit.Repository, logger *zap.Logger) UseCase {
 	return &useCase{repo: repo, auditRepo: auditRepo, logger: logger}
 }
 
 func (u *useCase) Create(ctx context.Context, req *CreateUserRequest) (*User, error) {
-	// TODO: Implement user creation business logic
-	// 1. Validate request
-	// 2. Create user via repository
-	// 3. Create audit log
+
 	u.logger.Info("UseCase: Creating user", zap.String("name", req.Name))
 
 	user, err := u.repo.Create(ctx, req)
@@ -41,7 +36,6 @@ func (u *useCase) Create(ctx context.Context, req *CreateUserRequest) (*User, er
 		return nil, fmt.Errorf("create user: %w", err)
 	}
 
-	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeUser,
 		EntityID:   user.ID,
@@ -53,24 +47,20 @@ func (u *useCase) Create(ctx context.Context, req *CreateUserRequest) (*User, er
 }
 
 func (u *useCase) GetByID(ctx context.Context, id int64) (*User, error) {
-	// TODO: Implement get user by ID business logic
+
 	u.logger.Info("UseCase: Getting user by ID", zap.Int64("id", id))
 	return u.repo.GetByID(ctx, id)
 }
 
 func (u *useCase) List(ctx context.Context, filter *UserFilter) (*common.PaginatedResult[User], error) {
-	// TODO: Implement user listing business logic
+
 	filter.SetDefaults()
 	u.logger.Info("UseCase: Listing users", zap.Any("filter", filter))
 	return u.repo.List(ctx, filter)
 }
 
 func (u *useCase) Update(ctx context.Context, id int64, req *UpdateUserRequest) (*User, error) {
-	// TODO: Implement user update business logic
-	// 1. Get existing user
-	// 2. Validate changes
-	// 3. Update user
-	// 4. Create audit log with old/new values
+
 	u.logger.Info("UseCase: Updating user", zap.Int64("id", id))
 
 	oldUser, err := u.repo.GetByID(ctx, id)
@@ -83,7 +73,6 @@ func (u *useCase) Update(ctx context.Context, id int64, req *UpdateUserRequest) 
 		return nil, fmt.Errorf("update user: %w", err)
 	}
 
-	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeUser,
 		EntityID:   id,
@@ -96,10 +85,7 @@ func (u *useCase) Update(ctx context.Context, id int64, req *UpdateUserRequest) 
 }
 
 func (u *useCase) Delete(ctx context.Context, id int64) error {
-	// TODO: Implement logical user deletion business logic
-	// 1. Check for dependencies
-	// 2. Mark user as deleted
-	// 3. Create audit log
+
 	u.logger.Info("UseCase: Deleting user", zap.Int64("id", id))
 
 	oldUser, err := u.repo.GetByID(ctx, id)
@@ -111,7 +97,6 @@ func (u *useCase) Delete(ctx context.Context, id int64) error {
 		return fmt.Errorf("delete user: %w", err)
 	}
 
-	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeUser,
 		EntityID:   id,

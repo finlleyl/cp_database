@@ -8,18 +8,15 @@ import (
 	"go.uber.org/zap"
 )
 
-// Handler handles HTTP requests for strategy operations
 type Handler struct {
 	useCase UseCase
 	logger  *zap.Logger
 }
 
-// NewHandler creates a new strategy handler
 func NewHandler(useCase UseCase, logger *zap.Logger) *Handler {
 	return &Handler{useCase: useCase, logger: logger}
 }
 
-// Create handles POST /api/v1/strategies
 func (h *Handler) Create(c *gin.Context) {
 	var req CreateStrategyRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -37,7 +34,6 @@ func (h *Handler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, strategy)
 }
 
-// GetByUUID handles GET /api/v1/strategies/id
 func (h *Handler) GetByID(c *gin.Context) {
 	strategyID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -59,7 +55,6 @@ func (h *Handler) GetByID(c *gin.Context) {
 	c.JSON(http.StatusOK, strategy)
 }
 
-// List handles GET /api/v1/strategies
 func (h *Handler) List(c *gin.Context) {
 	var filter StrategyFilter
 	if err := c.ShouldBindQuery(&filter); err != nil {
@@ -77,7 +72,6 @@ func (h *Handler) List(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-// Update handles PUT /api/v1/strategies/:uuid
 func (h *Handler) Update(c *gin.Context) {
 	strategyID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -101,7 +95,6 @@ func (h *Handler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, strategy)
 }
 
-// ChangeStatus handles POST /api/v1/strategies/:id/status
 func (h *Handler) ChangeStatus(c *gin.Context) {
 	strategyID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -125,7 +118,6 @@ func (h *Handler) ChangeStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, strategy)
 }
 
-// GetSummary handles GET /api/v1/strategies/:id/summary
 func (h *Handler) GetSummary(c *gin.Context) {
 	strategyID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {

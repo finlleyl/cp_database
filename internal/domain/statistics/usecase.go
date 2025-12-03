@@ -7,7 +7,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// UseCase defines the interface for statistics business logic
 type UseCase interface {
 	GetStrategyLeaderboard(ctx context.Context, req *LeaderboardRequest) ([]*StrategyLeaderboard, error)
 	GetInvestorPortfolio(ctx context.Context, req *InvestorPortfolioRequest) (*InvestorPortfolio, error)
@@ -19,13 +18,12 @@ type useCase struct {
 	logger *zap.Logger
 }
 
-// NewUseCase creates a new statistics use case
 func NewUseCase(repo Repository, logger *zap.Logger) UseCase {
 	return &useCase{repo: repo, logger: logger}
 }
 
 func (u *useCase) GetStrategyLeaderboard(ctx context.Context, req *LeaderboardRequest) ([]*StrategyLeaderboard, error) {
-	// Default limit: 10
+
 	if req.Limit <= 0 {
 		req.Limit = 10
 	}

@@ -12,7 +12,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// Repository defines the interface for subscription data operations
 type Repository interface {
 	Create(ctx context.Context, req *CreateSubscriptionRequest) (*Subscription, error)
 	GetByID(ctx context.Context, id int64) (*Subscription, error)
@@ -30,7 +29,6 @@ type repository struct {
 	logger *zap.Logger
 }
 
-// NewRepository creates a new subscription repository
 func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 	return &repository{db: db, logger: logger}
 }
@@ -118,7 +116,6 @@ func (r *repository) List(ctx context.Context, filter *SubscriptionFilter) (*com
 		whereClause = "WHERE " + strings.Join(conditions, " AND ")
 	}
 
-	// Count total
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM subscriptions %s", whereClause)
 	var total int64
 	err := r.db.GetContext(ctx, &total, countQuery, args...)
@@ -127,7 +124,6 @@ func (r *repository) List(ctx context.Context, filter *SubscriptionFilter) (*com
 		return nil, fmt.Errorf("count subscriptions: %w", err)
 	}
 
-	// Get data
 	query := fmt.Sprintf(`
 		SELECT id, investor_user_id, investor_account_id, offer_id, status, created_at, updated_at
 		FROM subscriptions
@@ -155,12 +151,12 @@ func (r *repository) List(ctx context.Context, filter *SubscriptionFilter) (*com
 }
 
 func (r *repository) Update(ctx context.Context, id int64, req *UpdateSubscriptionRequest) (*Subscription, error) {
-	// Currently no updatable fields besides status
+
 	return r.GetByID(ctx, id)
 }
 
 func (r *repository) ChangeStatus(ctx context.Context, id int64, req *ChangeStatusRequest, changedBy int64) (*Subscription, error) {
-	// Get current subscription to record old status
+
 	current, err := r.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -175,7 +171,6 @@ func (r *repository) ChangeStatus(ctx context.Context, id int64, req *ChangeStat
 	}
 	defer tx.Rollback()
 
-	// Update subscription status
 	updateQuery := `
 		UPDATE subscriptions
 		SET status = $1, updated_at = now()
@@ -193,14 +188,13 @@ func (r *repository) ChangeStatus(ctx context.Context, id int64, req *ChangeStat
 		return nil, fmt.Errorf("change subscription status: %w", err)
 	}
 
-	// Record status change in history (if table exists)
 	historyQuery := `
 		INSERT INTO subscription_status_history (subscription_id, old_status, new_status, reason, changed_by)
 		VALUES ($1, $2, $3, $4, $5)
 	`
 	_, err = tx.ExecContext(ctx, historyQuery, id, current.Status, req.Status, req.StatusReason, changedBy)
 	if err != nil {
-		// Log but don't fail if history table doesn't exist
+
 		r.logger.Warn("Failed to record status history (table might not exist)",
 			zap.Int64("id", id),
 			zap.Error(err))
@@ -284,8 +278,8 @@ func (r *repository) ArchiveByStrategyID(ctx context.Context, strategyID int64, 
 		UPDATE subscriptions s
 		SET status = 'archived', updated_at = now()
 		FROM offers o
-		WHERE s.offer_id = o.id 
-		AND o.strategy_id = $1 
+		WHERE s.offer_id = o.id
+		AND o.strategy_id = $1
 		AND s.status = 'active'
 	`
 

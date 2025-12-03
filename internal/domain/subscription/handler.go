@@ -8,18 +8,15 @@ import (
 	"go.uber.org/zap"
 )
 
-// Handler handles HTTP requests for subscription operations
 type Handler struct {
 	useCase UseCase
 	logger  *zap.Logger
 }
 
-// NewHandler creates a new subscription handler
 func NewHandler(useCase UseCase, logger *zap.Logger) *Handler {
 	return &Handler{useCase: useCase, logger: logger}
 }
 
-// Create handles POST /api/v1/subscriptions
 func (h *Handler) Create(c *gin.Context) {
 	var req CreateSubscriptionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -37,7 +34,6 @@ func (h *Handler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, subscription)
 }
 
-// GetByUUID handles GET /api/v1/subscriptions/:uuid
 func (h *Handler) GetByUUID(c *gin.Context) {
 	subscriptionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -59,7 +55,6 @@ func (h *Handler) GetByUUID(c *gin.Context) {
 	c.JSON(http.StatusOK, subscription)
 }
 
-// List handles GET /api/v1/subscriptions
 func (h *Handler) List(c *gin.Context) {
 	var filter SubscriptionFilter
 	if err := c.ShouldBindQuery(&filter); err != nil {
@@ -77,7 +72,6 @@ func (h *Handler) List(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-// Update handles PUT /api/v1/subscriptions/:uuid
 func (h *Handler) Update(c *gin.Context) {
 	subscriptionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -101,7 +95,6 @@ func (h *Handler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, subscription)
 }
 
-// ChangeStatus handles POST /api/v1/subscriptions/:uuid/status
 func (h *Handler) ChangeStatus(c *gin.Context) {
 	subscriptionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -115,7 +108,6 @@ func (h *Handler) ChangeStatus(c *gin.Context) {
 		return
 	}
 
-	// TODO: Get changedBy from auth context
 	changedBy := int64(0)
 
 	subscription, err := h.useCase.ChangeStatus(c.Request.Context(), subscriptionID, &req, changedBy)
@@ -128,7 +120,6 @@ func (h *Handler) ChangeStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, subscription)
 }
 
-// GetStatusHistory handles GET /api/v1/subscriptions/:uuid/status-history
 func (h *Handler) GetStatusHistory(c *gin.Context) {
 	subscriptionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {

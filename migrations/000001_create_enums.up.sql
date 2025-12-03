@@ -1,4 +1,4 @@
--- 0001_create_enums.up.sql
+
 
 CREATE TYPE strategy_status AS ENUM ('preparing', 'active', 'archived', 'deleted');
 CREATE TYPE offer_status AS ENUM ('active', 'archived', 'deleted');

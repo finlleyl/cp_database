@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RegisterRoutes registers strategy routes to the given router group
 func RegisterRoutes(rg *gin.RouterGroup, h *Handler) {
 	strategies := rg.Group("/strategies")
 	{

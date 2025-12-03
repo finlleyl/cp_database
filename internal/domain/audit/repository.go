@@ -11,21 +11,16 @@ import (
 	"go.uber.org/zap"
 )
 
-// Repository defines the interface for audit log data operations
 type Repository interface {
-	// Create creates an audit log entry manually (optional - triggers handle this automatically)
+
 	Create(ctx context.Context, req *AuditCreateRequest) (*AuditLog, error)
 
-	// List retrieves paginated audit logs with filters
 	List(ctx context.Context, filter *AuditFilter) (*common.PaginatedResult[AuditLog], error)
 
-	// GetByEntity retrieves all audit logs for a specific entity
 	GetByEntity(ctx context.Context, entityName string, entityPK string) ([]*AuditLog, error)
 
-	// GetStats retrieves audit statistics grouped by entity and operation
 	GetStats(ctx context.Context, filter *AuditStatsFilter) ([]*AuditStats, error)
 
-	// CountByEntity counts total changes for a specific entity
 	CountByEntity(ctx context.Context, entityName string) (int64, error)
 }
 
@@ -34,15 +29,10 @@ type repository struct {
 	logger *zap.Logger
 }
 
-// NewRepository creates a new audit repository
 func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 	return &repository{db: db, logger: logger}
 }
 
-// Create creates an audit log entry manually
-// Note: With database triggers enabled, this is typically not needed as triggers
-// automatically create audit records. This method is provided for backward compatibility
-// and for cases where manual audit logging is desired.
 func (r *repository) Create(ctx context.Context, req *AuditCreateRequest) (*AuditLog, error) {
 	var oldRowJSON, newRowJSON []byte
 	var err error
@@ -97,7 +87,6 @@ func (r *repository) Create(ctx context.Context, req *AuditCreateRequest) (*Audi
 	return &result, nil
 }
 
-// List retrieves paginated audit logs with optional filters
 func (r *repository) List(ctx context.Context, filter *AuditFilter) (*common.PaginatedResult[AuditLog], error) {
 	filter.SetDefaults()
 
@@ -146,7 +135,6 @@ func (r *repository) List(ctx context.Context, filter *AuditFilter) (*common.Pag
 		whereClause = "WHERE " + strings.Join(conditions, " AND ")
 	}
 
-	// Count total
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM audit_log %s", whereClause)
 	var total int64
 	err := r.db.GetContext(ctx, &total, countQuery, args...)
@@ -155,7 +143,6 @@ func (r *repository) List(ctx context.Context, filter *AuditFilter) (*common.Pag
 		return nil, fmt.Errorf("count audit logs: %w", err)
 	}
 
-	// Get data
 	query := fmt.Sprintf(`
 		SELECT id, entity_name, entity_pk, operation, changed_by, changed_at, old_row, new_row
 		FROM audit_log
@@ -187,7 +174,6 @@ func (r *repository) List(ctx context.Context, filter *AuditFilter) (*common.Pag
 	}, nil
 }
 
-// GetByEntity retrieves all audit logs for a specific entity
 func (r *repository) GetByEntity(ctx context.Context, entityName string, entityPK string) ([]*AuditLog, error) {
 	query := `
 		SELECT id, entity_name, entity_pk, operation, changed_by, changed_at, old_row, new_row
@@ -209,7 +195,6 @@ func (r *repository) GetByEntity(ctx context.Context, entityName string, entityP
 	return logs, nil
 }
 
-// GetStats retrieves audit statistics grouped by entity and operation
 func (r *repository) GetStats(ctx context.Context, filter *AuditStatsFilter) ([]*AuditStats, error) {
 	var conditions []string
 	var args []interface{}
@@ -256,7 +241,6 @@ func (r *repository) GetStats(ctx context.Context, filter *AuditStatsFilter) ([]
 	return stats, nil
 }
 
-// CountByEntity counts total changes for a specific entity type
 func (r *repository) CountByEntity(ctx context.Context, entityName string) (int64, error) {
 	query := `SELECT COUNT(*) FROM audit_log WHERE entity_name = $1`
 

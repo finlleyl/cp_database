@@ -6,7 +6,6 @@ import (
 	"github.com/finlleyl/cp_database/internal/domain/common"
 )
 
-// Subscription represents an investor's subscription to a strategy
 type Subscription struct {
 	ID                int64                     `json:"id" db:"id"`
 	InvestorUserID    int64                     `json:"investor_user_id" db:"investor_user_id"`
@@ -17,25 +16,21 @@ type Subscription struct {
 	UpdatedAt         time.Time                 `json:"updated_at" db:"updated_at"`
 }
 
-// CreateSubscriptionRequest represents the request to create a new subscription
 type CreateSubscriptionRequest struct {
 	InvestorUserID    int64 `json:"investor_user_id" binding:"required"`
 	InvestorAccountID int64 `json:"investor_account_id" binding:"required"`
 	OfferID           int64 `json:"offer_id" binding:"required"`
 }
 
-// UpdateSubscriptionRequest represents the request to update a subscription
 type UpdateSubscriptionRequest struct {
-	// Currently no updatable fields besides status
+
 }
 
-// ChangeStatusRequest represents the request to change subscription status
 type ChangeStatusRequest struct {
 	Status       common.SubscriptionStatus `json:"status" binding:"required,oneof=active archived suspended deleted"`
 	StatusReason string                    `json:"status_reason"`
 }
 
-// SubscriptionStatusHistory represents a status change history record
 type SubscriptionStatusHistory struct {
 	ID             int64                     `json:"id" db:"id"`
 	SubscriptionID int64                     `json:"subscription_id" db:"subscription_id"`
@@ -46,7 +41,6 @@ type SubscriptionStatusHistory struct {
 	CreatedAt      time.Time                 `json:"created_at" db:"created_at"`
 }
 
-// SubscriptionFilter represents filter parameters for subscription search
 type SubscriptionFilter struct {
 	UserID  int64                     `form:"user_id"`
 	OfferID int64                     `form:"offer_id"`

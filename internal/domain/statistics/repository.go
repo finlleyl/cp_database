@@ -9,7 +9,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// Repository defines the interface for statistics data operations
 type Repository interface {
 	GetStrategyLeaderboard(ctx context.Context, req *LeaderboardRequest) ([]*StrategyLeaderboard, error)
 	GetInvestorPortfolio(ctx context.Context, req *InvestorPortfolioRequest) (*InvestorPortfolio, error)
@@ -23,7 +22,6 @@ type repository struct {
 	logger *zap.Logger
 }
 
-// NewRepository creates a new statistics repository
 func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 	return &repository{db: db, logger: logger}
 }
@@ -38,7 +36,7 @@ func (r *repository) GetStrategyLeaderboard(ctx context.Context, req *Leaderboar
 
 	r.logger.Info("Getting strategy leaderboard", zap.Int("limit", req.Limit))
 
-	query := `SELECT strategy_id, title, total_profit, total_commissions, active_subscriptions 
+	query := `SELECT strategy_id, title, total_profit, total_commissions, active_subscriptions
 			  FROM fn_get_strategy_leaderboard($1)`
 
 	var leaderboard []*StrategyLeaderboard
@@ -53,7 +51,7 @@ func (r *repository) GetStrategyLeaderboard(ctx context.Context, req *Leaderboar
 func (r *repository) GetInvestorPortfolio(ctx context.Context, req *InvestorPortfolioRequest) (*InvestorPortfolio, error) {
 	r.logger.Info("Getting investor portfolio", zap.Int64("user_id", req.UserID))
 
-	query := `SELECT subscription_id, strategy_id, strategy_title, total_profit, copied_trades_count 
+	query := `SELECT subscription_id, strategy_id, strategy_title, total_profit, copied_trades_count
 			  FROM fn_get_investor_portfolio($1)`
 
 	var items []PortfolioItem
@@ -76,10 +74,8 @@ func (r *repository) GetMasterIncome(ctx context.Context, req *MasterIncomeReque
 		zap.Time("from", req.From),
 		zap.Time("to", req.To))
 
-	// Query to get total commissions by type for a master user
-	// This joins commissions through subscriptions -> offers -> strategies to find master's income
 	query := `
-		SELECT 
+		SELECT
 			COALESCE(SUM(CASE WHEN c.type = 'performance' THEN c.amount ELSE 0 END), 0) as performance_fees,
 			COALESCE(SUM(CASE WHEN c.type = 'management' THEN c.amount ELSE 0 END), 0) as management_fees,
 			COALESCE(SUM(CASE WHEN c.type = 'registration' THEN c.amount ELSE 0 END), 0) as registration_fees

@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RegisterRoutes registers offer routes to the given router group
 func RegisterRoutes(rg *gin.RouterGroup, h *Handler) {
 	offers := rg.Group("/offers")
 	{

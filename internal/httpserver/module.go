@@ -34,7 +34,6 @@ func NewRouter(logger *zap.Logger) *gin.Engine {
 	return r
 }
 
-// RegisterAllRoutes is an fx.Invoke function that registers all routes
 func RegisterAllRoutes(
 	r *gin.Engine,
 	userHandler *user.Handler,

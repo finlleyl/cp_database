@@ -12,7 +12,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// Repository defines the interface for offer data operations
 type Repository interface {
 	Create(ctx context.Context, req *CreateOfferRequest) (*Offer, error)
 	GetByID(ctx context.Context, id int64) (*Offer, error)
@@ -28,7 +27,6 @@ type repository struct {
 	logger *zap.Logger
 }
 
-// NewRepository creates a new offer repository
 func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 	return &repository{db: db, logger: logger}
 }
@@ -112,7 +110,6 @@ func (r *repository) List(ctx context.Context, filter *OfferFilter) (*common.Pag
 		whereClause = "WHERE " + strings.Join(conditions, " AND ")
 	}
 
-	// Count total
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM offers %s", whereClause)
 	var total int64
 	err := r.db.GetContext(ctx, &total, countQuery, args...)
@@ -121,7 +118,6 @@ func (r *repository) List(ctx context.Context, filter *OfferFilter) (*common.Pag
 		return nil, fmt.Errorf("count offers: %w", err)
 	}
 
-	// Get data
 	query := fmt.Sprintf(`
 		SELECT id, strategy_id, name, status, performance_fee_percent, management_fee_percent, registration_fee_amount, created_at, updated_at
 		FROM offers

@@ -10,7 +10,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// UseCase defines the interface for offer business logic
 type UseCase interface {
 	Create(ctx context.Context, req *CreateOfferRequest) (*Offer, error)
 	GetByID(ctx context.Context, id int64) (*Offer, error)
@@ -26,7 +25,6 @@ type useCase struct {
 	logger       *zap.Logger
 }
 
-// NewUseCase creates a new offer use case
 func NewUseCase(
 	repo Repository,
 	strategyRepo strategy.Repository,
@@ -46,7 +44,6 @@ func (u *useCase) Create(ctx context.Context, req *CreateOfferRequest) (*Offer, 
 		zap.Int64("strategy_id", req.StrategyID),
 		zap.String("name", req.Name))
 
-	// Validate strategy exists
 	strat, err := u.strategyRepo.GetByID(ctx, req.StrategyID)
 	if err != nil {
 		return nil, fmt.Errorf("get strategy: %w", err)
@@ -60,7 +57,6 @@ func (u *useCase) Create(ctx context.Context, req *CreateOfferRequest) (*Offer, 
 		return nil, fmt.Errorf("create offer: %w", err)
 	}
 
-	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeOffer,
 		EntityID:   offer.ID,
@@ -95,7 +91,6 @@ func (u *useCase) Update(ctx context.Context, id int64, req *UpdateOfferRequest)
 		return nil, fmt.Errorf("update offer: %w", err)
 	}
 
-	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeOffer,
 		EntityID:   offer.ID,
@@ -122,7 +117,6 @@ func (u *useCase) ChangeStatus(ctx context.Context, id int64, req *ChangeStatusR
 		return nil, fmt.Errorf("change offer status: %w", err)
 	}
 
-	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeOffer,
 		EntityID:   offer.ID,

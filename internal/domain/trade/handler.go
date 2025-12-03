@@ -8,18 +8,15 @@ import (
 	"go.uber.org/zap"
 )
 
-// Handler handles HTTP requests for trade operations
 type Handler struct {
 	useCase UseCase
 	logger  *zap.Logger
 }
 
-// NewHandler creates a new trade handler
 func NewHandler(useCase UseCase, logger *zap.Logger) *Handler {
 	return &Handler{useCase: useCase, logger: logger}
 }
 
-// Create handles POST /api/v1/trades
 func (h *Handler) Create(c *gin.Context) {
 	var req CreateTradeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -37,7 +34,6 @@ func (h *Handler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, trade)
 }
 
-// List handles GET /api/v1/trades
 func (h *Handler) List(c *gin.Context) {
 	var filter TradeFilter
 	if err := c.ShouldBindQuery(&filter); err != nil {
@@ -55,7 +51,6 @@ func (h *Handler) List(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-// CopyTrade handles POST /api/v1/trades/:id/copy
 func (h *Handler) CopyTrade(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -65,7 +60,7 @@ func (h *Handler) CopyTrade(c *gin.Context) {
 
 	var req CopyTradeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		// Allow empty body for copying to all subscriptions
+
 		req = CopyTradeRequest{}
 	}
 
@@ -82,7 +77,6 @@ func (h *Handler) CopyTrade(c *gin.Context) {
 	})
 }
 
-// ListCopiedTrades handles GET /api/v1/copied-trades
 func (h *Handler) ListCopiedTrades(c *gin.Context) {
 	var filter CopiedTradeFilter
 	if err := c.ShouldBindQuery(&filter); err != nil {

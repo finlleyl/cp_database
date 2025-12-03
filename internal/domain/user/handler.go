@@ -8,18 +8,15 @@ import (
 	"go.uber.org/zap"
 )
 
-// Handler handles HTTP requests for user operations
 type Handler struct {
 	useCase UseCase
 	logger  *zap.Logger
 }
 
-// NewHandler creates a new user handler
 func NewHandler(useCase UseCase, logger *zap.Logger) *Handler {
 	return &Handler{useCase: useCase, logger: logger}
 }
 
-// Create handles POST /api/v1/users
 func (h *Handler) Create(c *gin.Context) {
 	var req CreateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -37,7 +34,6 @@ func (h *Handler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, user)
 }
 
-// GetByID handles GET /api/v1/users/:id
 func (h *Handler) GetByID(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -59,7 +55,6 @@ func (h *Handler) GetByID(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-// List handles GET /api/v1/users
 func (h *Handler) List(c *gin.Context) {
 	var filter UserFilter
 	if err := c.ShouldBindQuery(&filter); err != nil {
@@ -77,7 +72,6 @@ func (h *Handler) List(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-// Update handles PUT /api/v1/users/:id
 func (h *Handler) Update(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -101,7 +95,6 @@ func (h *Handler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-// Delete handles DELETE /api/v1/users/:id
 func (h *Handler) Delete(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {

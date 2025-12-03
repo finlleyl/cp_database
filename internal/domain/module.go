@@ -13,19 +13,16 @@ import (
 	"go.uber.org/fx"
 )
 
-// Module aggregates all domain modules
 var Module = fx.Options(
-	// Core domains
+
 	user.Module,
 	account.Module,
 
-	// Business domains
 	strategy.Module,
 	offer.Module,
 	subscription.Module,
 	trade.Module,
 
-	// Supporting domains
 	statistics.Module,
 	batchimport.Module,
 	audit.Module,

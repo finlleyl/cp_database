@@ -15,7 +15,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RouteParams contains all handlers needed for route registration
 type RouteParams struct {
 	UserHandler         *user.Handler
 	AccountHandler      *account.Handler
@@ -36,16 +35,14 @@ func pingRoute(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "pong"})
 }
 
-// RegisterRoutes registers all routes including base routes and domain routes
 func RegisterRoutes(r *gin.Engine, params RouteParams) {
-	// Base routes
+
 	r.GET("/health", healthRoute)
 	r.GET("/ping", pingRoute)
 
-	// API v1 routes
 	v1 := r.Group("/api/v1")
 	{
-		// Register domain routes
+
 		user.RegisterRoutes(v1, params.UserHandler)
 		account.RegisterRoutes(v1, params.AccountHandler)
 		strategy.RegisterRoutes(v1, params.StrategyHandler)

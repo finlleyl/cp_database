@@ -12,7 +12,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// Repository defines the interface for account data operations
 type Repository interface {
 	Create(ctx context.Context, req *CreateAccountRequest) (*Account, error)
 	GetByID(ctx context.Context, id int64) (*Account, error)
@@ -27,7 +26,6 @@ type repository struct {
 	logger *zap.Logger
 }
 
-// NewRepository creates a new account repository
 func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 	return &repository{db: db, logger: logger}
 }
@@ -108,7 +106,6 @@ func (r *repository) List(ctx context.Context, filter *AccountFilter) (*common.P
 		whereClause = "WHERE " + strings.Join(conditions, " AND ")
 	}
 
-	// Count total
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM accounts %s", whereClause)
 	var total int64
 	err := r.db.GetContext(ctx, &total, countQuery, args...)
@@ -117,7 +114,6 @@ func (r *repository) List(ctx context.Context, filter *AccountFilter) (*common.P
 		return nil, fmt.Errorf("count accounts: %w", err)
 	}
 
-	// Get data
 	query := fmt.Sprintf(`
 		SELECT id, user_id, name, account_type, currency, created_at, updated_at
 		FROM accounts
@@ -201,7 +197,7 @@ func (r *repository) Update(ctx context.Context, id int64, req *UpdateAccountReq
 }
 
 func (r *repository) Delete(ctx context.Context, id int64) error {
-	// Check for dependencies (strategies, subscriptions)
+
 	var strategyCount int
 	err := r.db.GetContext(ctx, &strategyCount,
 		"SELECT COUNT(*) FROM strategies WHERE master_account_id = $1", id)

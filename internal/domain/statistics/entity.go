@@ -4,7 +4,6 @@ import (
 	"time"
 )
 
-// Period represents a statistics period
 type Period string
 
 const (
@@ -15,8 +14,6 @@ const (
 	PeriodAll   Period = "all"
 )
 
-// StrategyLeaderboard represents a strategy in the leaderboard
-// Matches fn_get_strategy_leaderboard return type
 type StrategyLeaderboard struct {
 	StrategyID          int64   `json:"strategy_id" db:"strategy_id"`
 	Title               string  `json:"title" db:"title"`
@@ -25,15 +22,11 @@ type StrategyLeaderboard struct {
 	ActiveSubscriptions int     `json:"active_subscriptions" db:"active_subscriptions"`
 }
 
-// InvestorPortfolio represents an investor's portfolio statistics
-// Response wrapper for investor portfolio endpoint
 type InvestorPortfolio struct {
 	UserID        int64           `json:"user_id"`
 	Subscriptions []PortfolioItem `json:"subscriptions"`
 }
 
-// PortfolioItem represents a single subscription in the portfolio
-// Matches fn_get_investor_portfolio return type
 type PortfolioItem struct {
 	SubscriptionID    int64   `json:"subscription_id" db:"subscription_id"`
 	StrategyID        int64   `json:"strategy_id" db:"strategy_id"`
@@ -42,7 +35,6 @@ type PortfolioItem struct {
 	CopiedTradesCount int64   `json:"copied_trades_count" db:"copied_trades_count"`
 }
 
-// MasterIncome represents a master's income from commissions
 type MasterIncome struct {
 	UserID           int64   `json:"user_id"`
 	TotalIncome      float64 `json:"total_income"`
@@ -51,7 +43,6 @@ type MasterIncome struct {
 	RegistrationFees float64 `json:"registration_fees"`
 }
 
-// Commission represents a commission record
 type Commission struct {
 	ID             int64          `json:"id" db:"id"`
 	SubscriptionID int64          `json:"subscription_id" db:"subscription_id"`
@@ -62,7 +53,6 @@ type Commission struct {
 	CreatedAt      time.Time      `json:"created_at" db:"created_at"`
 }
 
-// CommissionType represents the type of commission
 type CommissionType string
 
 const (
@@ -71,7 +61,6 @@ const (
 	CommissionTypeRegistration CommissionType = "registration"
 )
 
-// CreateCommissionRequest represents the request to create a commission
 type CreateCommissionRequest struct {
 	SubscriptionID int64          `json:"subscription_id" binding:"required"`
 	Type           CommissionType `json:"type" binding:"required,oneof=performance management registration"`

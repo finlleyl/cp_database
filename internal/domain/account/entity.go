@@ -6,7 +6,6 @@ import (
 	"github.com/finlleyl/cp_database/internal/domain/common"
 )
 
-// Account represents a trading account
 type Account struct {
 	ID          int64     `json:"id" db:"id"`
 	UserID      int64     `json:"user_id" db:"user_id"`
@@ -17,7 +16,6 @@ type Account struct {
 	UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
 }
 
-// CreateAccountRequest represents the request to create a new account
 type CreateAccountRequest struct {
 	UserID      int64  `json:"user_id" binding:"required"`
 	Name        string `json:"name" binding:"required"`
@@ -25,14 +23,12 @@ type CreateAccountRequest struct {
 	Currency    string `json:"currency" binding:"required,len=3"`
 }
 
-// UpdateAccountRequest represents the request to update an account
 type UpdateAccountRequest struct {
 	Name        *string `json:"name,omitempty"`
 	AccountType *string `json:"account_type,omitempty"`
 	Currency    *string `json:"currency,omitempty"`
 }
 
-// AccountFilter represents filter parameters for account search
 type AccountFilter struct {
 	UserID      int64  `form:"user_id"`
 	AccountType string `form:"account_type"`

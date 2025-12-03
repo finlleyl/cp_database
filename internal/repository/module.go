@@ -64,8 +64,6 @@ func NewDB(
 	return db, nil
 }
 
-// Module provides database connection
-// Domain repositories are provided by their respective modules
 var Module = fx.Options(
 	fx.Provide(
 		NewDB,

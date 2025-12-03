@@ -11,7 +11,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// UseCase defines the interface for trade business logic
 type UseCase interface {
 	Create(ctx context.Context, req *CreateTradeRequest) (*Trade, error)
 	GetByID(ctx context.Context, id int64) (*Trade, error)
@@ -28,7 +27,6 @@ type useCase struct {
 	logger           *zap.Logger
 }
 
-// NewUseCase creates a new trade use case
 func NewUseCase(
 	repo Repository,
 	copiedTradeRepo CopiedTradeRepository,
@@ -57,7 +55,6 @@ func (u *useCase) Create(ctx context.Context, req *CreateTradeRequest) (*Trade, 
 		return nil, fmt.Errorf("create trade: %w", err)
 	}
 
-	// Create audit log
 	_, _ = u.auditRepo.Create(ctx, &audit.AuditCreateRequest{
 		EntityType: audit.EntityTypeTrade,
 		EntityID:   trade.ID,
@@ -94,7 +91,7 @@ func (u *useCase) CopyTrade(ctx context.Context, tradeID int64, req *CopyTradeRe
 
 	var subscriptions []*subscription.Subscription
 	if len(req.SubscriptionIDs) > 0 {
-		// Get specific subscriptions
+
 		for _, subID := range req.SubscriptionIDs {
 			sub, err := u.subscriptionRepo.GetByID(ctx, subID)
 			if err != nil {
@@ -106,7 +103,7 @@ func (u *useCase) CopyTrade(ctx context.Context, tradeID int64, req *CopyTradeRe
 			}
 		}
 	} else {
-		// Get all active subscriptions for the strategy
+
 		subscriptions, err = u.subscriptionRepo.GetActiveByStrategyID(ctx, trade.StrategyID)
 		if err != nil {
 			return nil, fmt.Errorf("get active subscriptions: %w", err)

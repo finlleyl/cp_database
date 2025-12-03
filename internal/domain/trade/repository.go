@@ -13,7 +13,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// Repository defines the interface for trade data operations
 type Repository interface {
 	Create(ctx context.Context, req *CreateTradeRequest) (*Trade, error)
 	GetByID(ctx context.Context, id int64) (*Trade, error)
@@ -23,7 +22,6 @@ type Repository interface {
 	CloseTrade(ctx context.Context, id int64, closePrice float64, closeTime time.Time) error
 }
 
-// CopiedTradeRepository defines the interface for copied trade data operations
 type CopiedTradeRepository interface {
 	Create(ctx context.Context, req *CreateCopiedTradeRequest) (*CopiedTrade, error)
 	GetByID(ctx context.Context, id int64) (*CopiedTrade, error)
@@ -39,7 +37,6 @@ type repository struct {
 	logger *zap.Logger
 }
 
-// NewRepository creates a new trade repository
 func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 	return &repository{db: db, logger: logger}
 }
@@ -131,7 +128,6 @@ func (r *repository) List(ctx context.Context, filter *TradeFilter) (*common.Pag
 		whereClause = "WHERE " + strings.Join(conditions, " AND ")
 	}
 
-	// Count total
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM trades %s", whereClause)
 	var total int64
 	err := r.db.GetContext(ctx, &total, countQuery, args...)
@@ -140,7 +136,6 @@ func (r *repository) List(ctx context.Context, filter *TradeFilter) (*common.Pag
 		return nil, fmt.Errorf("count trades: %w", err)
 	}
 
-	// Get data
 	query := fmt.Sprintf(`
 		SELECT id, strategy_id, master_account_id, symbol, volume_lots, direction, open_time, close_time, open_price, close_price, profit, commission, swap, created_at
 		FROM trades
@@ -261,14 +256,11 @@ func (r *repository) CloseTrade(ctx context.Context, id int64, closePrice float6
 	return nil
 }
 
-// CopiedTradeRepository implementation
-
 type copiedTradeRepository struct {
 	db     *sqlx.DB
 	logger *zap.Logger
 }
 
-// NewCopiedTradeRepository creates a new copied trade repository
 func NewCopiedTradeRepository(db *sqlx.DB, logger *zap.Logger) CopiedTradeRepository {
 	return &copiedTradeRepository{db: db, logger: logger}
 }
@@ -351,7 +343,6 @@ func (r *copiedTradeRepository) List(ctx context.Context, filter *CopiedTradeFil
 		whereClause = "WHERE " + strings.Join(conditions, " AND ")
 	}
 
-	// Count total
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM copied_trades %s", whereClause)
 	var total int64
 	err := r.db.GetContext(ctx, &total, countQuery, args...)
@@ -360,7 +351,6 @@ func (r *copiedTradeRepository) List(ctx context.Context, filter *CopiedTradeFil
 		return nil, fmt.Errorf("count copied trades: %w", err)
 	}
 
-	// Get data
 	query := fmt.Sprintf(`
 		SELECT id, trade_id, subscription_id, investor_account_id, volume_lots, profit, commission, swap, open_time, close_time, created_at
 		FROM copied_trades

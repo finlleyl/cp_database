@@ -6,7 +6,6 @@ import (
 	"github.com/finlleyl/cp_database/internal/domain/common"
 )
 
-// Offer represents a strategy's offer for investors
 type Offer struct {
 	ID                    int64              `json:"id" db:"id"`
 	StrategyID            int64              `json:"strategy_id" db:"strategy_id"`
@@ -19,7 +18,6 @@ type Offer struct {
 	UpdatedAt             time.Time          `json:"updated_at" db:"updated_at"`
 }
 
-// CreateOfferRequest represents the request to create a new offer
 type CreateOfferRequest struct {
 	StrategyID            int64    `json:"strategy_id" binding:"required"`
 	Name                  string   `json:"name" binding:"required"`
@@ -28,7 +26,6 @@ type CreateOfferRequest struct {
 	RegistrationFeeAmount *float64 `json:"registration_fee_amount"`
 }
 
-// UpdateOfferRequest represents the request to update an offer
 type UpdateOfferRequest struct {
 	Name                  *string  `json:"name,omitempty"`
 	PerformanceFeePercent *float64 `json:"performance_fee_percent,omitempty"`
@@ -36,12 +33,10 @@ type UpdateOfferRequest struct {
 	RegistrationFeeAmount *float64 `json:"registration_fee_amount,omitempty"`
 }
 
-// ChangeStatusRequest represents the request to change offer status
 type ChangeStatusRequest struct {
 	Status common.OfferStatus `json:"status" binding:"required,oneof=active archived deleted"`
 }
 
-// OfferFilter represents filter parameters for offer search
 type OfferFilter struct {
 	StrategyID int64              `form:"strategy_id"`
 	Status     common.OfferStatus `form:"status"`

@@ -7,7 +7,6 @@ import (
 	"github.com/finlleyl/cp_database/internal/domain/common"
 )
 
-// AuditLog represents an audit log entry (matches audit_log table)
 type AuditLog struct {
 	ID         int64                 `json:"id" db:"id"`
 	EntityName string                `json:"entity_name" db:"entity_name"`
@@ -19,7 +18,6 @@ type AuditLog struct {
 	NewRow     json.RawMessage       `json:"new_row,omitempty" db:"new_row"`
 }
 
-// Auditable entity names (matches tables with audit triggers)
 const (
 	EntityNameUsers         = "users"
 	EntityNameAccounts      = "accounts"
@@ -29,7 +27,6 @@ const (
 	EntityNameTrades        = "trades"
 )
 
-// EntityType represents the type of entity being audited (for backward compatibility)
 type EntityType string
 
 const (
@@ -41,18 +38,15 @@ const (
 	EntityTypeTrade        EntityType = "trades"
 )
 
-// AuditAction represents the action being audited (for backward compatibility)
 type AuditAction string
 
 const (
 	AuditActionCreate       AuditAction = "insert"
 	AuditActionUpdate       AuditAction = "update"
 	AuditActionDelete       AuditAction = "delete"
-	AuditActionStatusChange AuditAction = "update" // Maps to update in DB
+	AuditActionStatusChange AuditAction = "update"
 )
 
-// AuditCreateRequest is used internally to create audit log entries (for backward compatibility)
-// Note: With database triggers, manual audit creation is optional as triggers handle it automatically
 type AuditCreateRequest struct {
 	EntityType EntityType
 	EntityID   int64
@@ -65,7 +59,6 @@ type AuditCreateRequest struct {
 	UserAgent  string
 }
 
-// AuditFilter represents filter parameters for audit log search
 type AuditFilter struct {
 	EntityName string                `form:"entity_name" binding:"omitempty,oneof=users accounts strategies offers subscriptions trades"`
 	EntityPK   string                `form:"entity_pk"`
@@ -75,14 +68,12 @@ type AuditFilter struct {
 	common.Pagination
 }
 
-// AuditStats represents statistics for audit log
 type AuditStats struct {
 	EntityName   string `json:"entity_name" db:"entity_name"`
 	Operation    string `json:"operation" db:"operation"`
 	TotalChanges int64  `json:"total_changes" db:"total_changes"`
 }
 
-// AuditStatsFilter represents filter parameters for audit statistics
 type AuditStatsFilter struct {
 	EntityName string `form:"entity_name"`
 	common.TimeRange

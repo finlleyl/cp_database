@@ -12,7 +12,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// Repository defines the interface for strategy data operations
 type Repository interface {
 	Create(ctx context.Context, req *CreateStrategyRequest) (*Strategy, error)
 	GetByID(ctx context.Context, id int64) (*GetStrategyByIDResponse, error)
@@ -29,7 +28,6 @@ type repository struct {
 	logger *zap.Logger
 }
 
-// NewRepository creates a new strategy repository
 func NewRepository(db *sqlx.DB, logger *zap.Logger) Repository {
 	return &repository{db: db, logger: logger}
 }
@@ -166,7 +164,7 @@ func (r *repository) Update(ctx context.Context, id int64, req *UpdateStrategyRe
 	}
 
 	if len(setClauses) == 0 {
-		// No updates, just return existing strategy
+
 		strategy, err := r.getStrategyByID(ctx, id)
 		if err != nil {
 			return nil, err
@@ -291,7 +289,6 @@ func (r *repository) GetSummary(ctx context.Context, id int64) (*StrategySummary
 	}, nil
 }
 
-// getStrategyByID is a helper to get raw strategy without view
 func (r *repository) getStrategyByID(ctx context.Context, id int64) (*Strategy, error) {
 	query := `
 		SELECT id, master_user_id, master_account_id, title, description, status, created_at, updated_at

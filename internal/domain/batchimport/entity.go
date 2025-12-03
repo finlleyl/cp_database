@@ -7,7 +7,6 @@ import (
 	"github.com/finlleyl/cp_database/internal/domain/common"
 )
 
-// ImportJob represents a batch import job (matches import_jobs table)
 type ImportJob struct {
 	ID            int64                  `json:"id" db:"id"`
 	Type          ImportJobType          `json:"type" db:"type"`
@@ -21,7 +20,6 @@ type ImportJob struct {
 	CreatedAt     time.Time              `json:"created_at" db:"created_at"`
 }
 
-// ImportJobType represents the type of import (matches import_job_type enum)
 type ImportJobType string
 
 const (
@@ -30,7 +28,6 @@ const (
 	ImportJobTypeStatistics ImportJobType = "statistics"
 )
 
-// ImportJobError represents an error that occurred during import (matches import_job_errors table)
 type ImportJobError struct {
 	ID           int64           `json:"id" db:"id"`
 	JobID        int64           `json:"job_id" db:"job_id"`
@@ -40,7 +37,6 @@ type ImportJobError struct {
 	CreatedAt    time.Time       `json:"created_at" db:"created_at"`
 }
 
-// ImportJobSummary represents a summary of an import job (computed, not stored)
 type ImportJobSummary struct {
 	TotalRows     int            `json:"total_rows"`
 	ProcessedRows int            `json:"processed_rows"`
@@ -49,34 +45,29 @@ type ImportJobSummary struct {
 	Duration      time.Duration  `json:"duration"`
 }
 
-// CreateImportJobRequest represents the request to create an import job
 type CreateImportJobRequest struct {
 	Type     ImportJobType `json:"type" binding:"required,oneof=trades accounts statistics"`
 	FileName string        `json:"file_name"`
 }
 
-// ImportTradesRequest represents the request to import trades
 type ImportTradesRequest struct {
 	StrategyID int64  `form:"strategy_id" binding:"required"`
 	AccountID  int64  `form:"account_id" binding:"required"`
 	FileFormat string `form:"file_format" binding:"required,oneof=csv json"`
 }
 
-// ImportTradesParameters represents parameters for trade import (stored as JSON metadata)
 type ImportTradesParameters struct {
 	StrategyID int64  `json:"strategy_id"`
 	AccountID  int64  `json:"account_id"`
 	FileFormat string `json:"file_format"`
 }
 
-// JobFilter represents filter parameters for import job search
 type JobFilter struct {
 	Type   ImportJobType          `form:"type"`
 	Status common.ImportJobStatus `form:"status"`
 	common.Pagination
 }
 
-// ErrorFilter represents filter parameters for import job error search
 type ErrorFilter struct {
 	common.Pagination
 }
