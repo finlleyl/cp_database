@@ -1,6 +1,9 @@
-# cp_database
-
 Сервис копирования сделок (Copy Trading Platform).
+
+## API Документация
+
+<iframe src="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/finlleyl/cp_database/docs/swagger.yaml" width="100%" height="600px"></iframe>
+
 
 ## Схема базы данных
 
