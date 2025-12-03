@@ -2,7 +2,9 @@
 
 ## API Документация
 
-[Открыть Swagger UI](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/finlleyl/cp_database/docs/swagger.yaml)
+**Локально:** После запуска приложения Swagger UI доступен по адресу: http://localhost:8080/swagger/index.html
+
+**Online:** [Открыть Swagger UI](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/finlleyl/cp_database/main/docs/swagger.json)
 
 
 ## Схема базы данных
