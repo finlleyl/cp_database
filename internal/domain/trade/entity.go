@@ -77,3 +77,27 @@ type CopiedTradeFilter struct {
 type CopyTradeRequest struct {
 	SubscriptionIDs []int64 `json:"subscription_ids,omitempty"`
 }
+
+// TradeListResponse представляет пагинированный ответ со списком сделок
+type TradeListResponse struct {
+	Data       []Trade `json:"data"`
+	Total      int64   `json:"total"`
+	Page       int     `json:"page"`
+	Limit      int     `json:"limit"`
+	TotalPages int     `json:"total_pages"`
+}
+
+// CopiedTradeListResponse представляет пагинированный ответ со списком скопированных сделок
+type CopiedTradeListResponse struct {
+	Data       []CopiedTrade `json:"data"`
+	Total      int64         `json:"total"`
+	Page       int           `json:"page"`
+	Limit      int           `json:"limit"`
+	TotalPages int           `json:"total_pages"`
+}
+
+// CopyTradeResponse представляет ответ после копирования сделки
+type CopyTradeResponse struct {
+	CopiedCount  int           `json:"copied_count"`
+	CopiedTrades []CopiedTrade `json:"copied_trades"`
+}

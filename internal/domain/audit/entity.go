@@ -14,8 +14,8 @@ type AuditLog struct {
 	Operation  common.AuditOperation `json:"operation" db:"operation"`
 	ChangedBy  *int64                `json:"changed_by,omitempty" db:"changed_by"`
 	ChangedAt  time.Time             `json:"changed_at" db:"changed_at"`
-	OldRow     json.RawMessage       `json:"old_row,omitempty" db:"old_row"`
-	NewRow     json.RawMessage       `json:"new_row,omitempty" db:"new_row"`
+	OldRow     json.RawMessage       `json:"old_row,omitempty" db:"old_row" swaggertype:"object"`
+	NewRow     json.RawMessage       `json:"new_row,omitempty" db:"new_row" swaggertype:"object"`
 }
 
 const (
@@ -77,4 +77,13 @@ type AuditStats struct {
 type AuditStatsFilter struct {
 	EntityName string `form:"entity_name"`
 	common.TimeRange
+}
+
+// AuditListResponse представляет пагинированный ответ со списком аудит-логов
+type AuditListResponse struct {
+	Data       []AuditLog `json:"data"`
+	Total      int64      `json:"total"`
+	Page       int        `json:"page"`
+	Limit      int        `json:"limit"`
+	TotalPages int        `json:"total_pages"`
 }

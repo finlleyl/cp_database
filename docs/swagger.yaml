@@ -1,5 +1,257 @@
 basePath: /api/v1
 definitions:
+  account.Account:
+    properties:
+      account_type:
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  account.AccountListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/account.Account'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  account.CreateAccountRequest:
+    properties:
+      account_type:
+        enum:
+        - master
+        - investor
+        type: string
+      currency:
+        type: string
+      name:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - account_type
+    - currency
+    - name
+    - user_id
+    type: object
+  account.UpdateAccountRequest:
+    properties:
+      account_type:
+        type: string
+      currency:
+        type: string
+      name:
+        type: string
+    type: object
+  audit.AuditListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/audit.AuditLog'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  audit.AuditLog:
+    properties:
+      changed_at:
+        type: string
+      changed_by:
+        type: integer
+      entity_name:
+        type: string
+      entity_pk:
+        type: string
+      id:
+        type: integer
+      new_row:
+        type: object
+      old_row:
+        type: object
+      operation:
+        $ref: '#/definitions/common.AuditOperation'
+    type: object
+  audit.AuditStats:
+    properties:
+      entity_name:
+        type: string
+      operation:
+        type: string
+      total_changes:
+        type: integer
+    type: object
+  batchimport.ImportJob:
+    properties:
+      created_at:
+        type: string
+      error_rows:
+        type: integer
+      file_name:
+        type: string
+      finished_at:
+        type: string
+      id:
+        type: integer
+      processed_rows:
+        type: integer
+      started_at:
+        type: string
+      status:
+        $ref: '#/definitions/common.ImportJobStatus'
+      total_rows:
+        type: integer
+      type:
+        $ref: '#/definitions/batchimport.ImportJobType'
+    type: object
+  batchimport.ImportJobError:
+    properties:
+      created_at:
+        type: string
+      error_message:
+        type: string
+      id:
+        type: integer
+      job_id:
+        type: integer
+      raw_data:
+        type: object
+      row_number:
+        type: integer
+    type: object
+  batchimport.ImportJobSummary:
+    properties:
+      duration:
+        type: integer
+      error_rows:
+        type: integer
+      errors_by_type:
+        type: object
+      processed_rows:
+        type: integer
+      total_rows:
+        type: integer
+    type: object
+  batchimport.ImportJobType:
+    enum:
+    - trades
+    - accounts
+    - statistics
+    type: string
+    x-enum-varnames:
+    - ImportJobTypeTrades
+    - ImportJobTypeAccounts
+    - ImportJobTypeStatistics
+  batchimport.JobErrorListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/batchimport.ImportJobError'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  batchimport.JobListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/batchimport.ImportJob'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  common.AuditOperation:
+    enum:
+    - insert
+    - update
+    - delete
+    type: string
+    x-enum-varnames:
+    - AuditOperationInsert
+    - AuditOperationUpdate
+    - AuditOperationDelete
+  common.ImportJobStatus:
+    enum:
+    - pending
+    - running
+    - success
+    - failed
+    type: string
+    x-enum-varnames:
+    - ImportJobStatusPending
+    - ImportJobStatusRunning
+    - ImportJobStatusSuccess
+    - ImportJobStatusFailed
+  common.OfferStatus:
+    enum:
+    - active
+    - archived
+    - deleted
+    type: string
+    x-enum-varnames:
+    - OfferStatusActive
+    - OfferStatusArchived
+    - OfferStatusDeleted
+  common.StrategyStatus:
+    enum:
+    - preparing
+    - active
+    - archived
+    - deleted
+    type: string
+    x-enum-varnames:
+    - StrategyStatusPreparing
+    - StrategyStatusActive
+    - StrategyStatusArchived
+    - StrategyStatusDeleted
+  common.SubscriptionStatus:
+    enum:
+    - preparing
+    - active
+    - archived
+    - suspended
+    - deleted
+    type: string
+    x-enum-varnames:
+    - SubscriptionStatusPreparing
+    - SubscriptionStatusActive
+    - SubscriptionStatusArchived
+    - SubscriptionStatusSuspended
+    - SubscriptionStatusDeleted
   common.UserRole:
     enum:
     - master
@@ -8,6 +260,444 @@ definitions:
     x-enum-varnames:
     - UserRoleMaster
     - UserRoleInvestor
+  offer.ChangeStatusRequest:
+    properties:
+      status:
+        allOf:
+        - $ref: '#/definitions/common.OfferStatus'
+        enum:
+        - active
+        - archived
+        - deleted
+    required:
+    - status
+    type: object
+  offer.CreateOfferRequest:
+    properties:
+      management_fee_percent:
+        type: number
+      name:
+        type: string
+      performance_fee_percent:
+        type: number
+      registration_fee_amount:
+        type: number
+      strategy_id:
+        type: integer
+    required:
+    - name
+    - strategy_id
+    type: object
+  offer.Offer:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      management_fee_percent:
+        type: number
+      name:
+        type: string
+      performance_fee_percent:
+        type: number
+      registration_fee_amount:
+        type: number
+      status:
+        $ref: '#/definitions/common.OfferStatus'
+      strategy_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  offer.OfferListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/offer.Offer'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  offer.UpdateOfferRequest:
+    properties:
+      management_fee_percent:
+        type: number
+      name:
+        type: string
+      performance_fee_percent:
+        type: number
+      registration_fee_amount:
+        type: number
+    type: object
+  statistics.LeaderboardEntry:
+    properties:
+      active_subscriptions:
+        type: integer
+      strategy_id:
+        type: integer
+      title:
+        type: string
+      total_commissions:
+        type: number
+      total_profit:
+        type: number
+    type: object
+  statistics.MasterIncome:
+    properties:
+      management_fees:
+        type: number
+      performance_fees:
+        type: number
+      registration_fees:
+        type: number
+      total_income:
+        type: number
+      user_id:
+        type: integer
+    type: object
+  statistics.PortfolioEntry:
+    properties:
+      copied_trades_count:
+        type: integer
+      strategy_id:
+        type: integer
+      strategy_title:
+        type: string
+      subscription_id:
+        type: integer
+      total_profit:
+        type: number
+    type: object
+  strategy.ChangeStatusRequest:
+    properties:
+      status:
+        allOf:
+        - $ref: '#/definitions/common.StrategyStatus'
+        enum:
+        - active
+        - archived
+        - deleted
+      status_reason:
+        type: string
+    required:
+    - status
+    type: object
+  strategy.CreateStrategyRequest:
+    properties:
+      account_id:
+        type: integer
+      avatar_url:
+        type: string
+      nickname:
+        type: string
+      payment_account_id:
+        type: integer
+      summary:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - account_id
+    - nickname
+    - user_id
+    type: object
+  strategy.GetStrategyByIDResponse:
+    properties:
+      active_subscriptions:
+        type: integer
+      id:
+        type: integer
+      status:
+        $ref: '#/definitions/common.StrategyStatus'
+      title:
+        type: string
+      total_commissions:
+        type: number
+      total_copied_trades:
+        type: integer
+      total_profit:
+        type: number
+      total_subscriptions:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  strategy.Strategy:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      master_account_id:
+        type: integer
+      master_user_id:
+        type: integer
+      status:
+        $ref: '#/definitions/common.StrategyStatus'
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  strategy.StrategyListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/strategy.Strategy'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  strategy.StrategySummary:
+    properties:
+      strategy_id:
+        type: integer
+      total_profit:
+        type: number
+    type: object
+  strategy.UpdateStrategyRequest:
+    properties:
+      avatar_url:
+        type: string
+      nickname:
+        type: string
+      payment_account_id:
+        type: integer
+      summary:
+        type: string
+    type: object
+  subscription.ChangeStatusRequest:
+    properties:
+      status:
+        allOf:
+        - $ref: '#/definitions/common.SubscriptionStatus'
+        enum:
+        - active
+        - archived
+        - suspended
+        - deleted
+      status_reason:
+        type: string
+    required:
+    - status
+    type: object
+  subscription.CreateSubscriptionRequest:
+    properties:
+      investor_account_id:
+        type: integer
+      investor_user_id:
+        type: integer
+      offer_id:
+        type: integer
+    required:
+    - investor_account_id
+    - investor_user_id
+    - offer_id
+    type: object
+  subscription.Subscription:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      investor_account_id:
+        type: integer
+      investor_user_id:
+        type: integer
+      offer_id:
+        type: integer
+      status:
+        $ref: '#/definitions/common.SubscriptionStatus'
+      updated_at:
+        type: string
+    type: object
+  subscription.SubscriptionListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/subscription.Subscription'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  subscription.SubscriptionStatusHistory:
+    properties:
+      changed_by:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      new_status:
+        $ref: '#/definitions/common.SubscriptionStatus'
+      old_status:
+        $ref: '#/definitions/common.SubscriptionStatus'
+      reason:
+        type: string
+      subscription_id:
+        type: integer
+    type: object
+  subscription.UpdateSubscriptionRequest:
+    type: object
+  trade.CopiedTrade:
+    properties:
+      close_time:
+        type: string
+      commission:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: integer
+      investor_account_id:
+        type: integer
+      open_time:
+        type: string
+      profit:
+        type: number
+      subscription_id:
+        type: integer
+      swap:
+        type: number
+      trade_id:
+        type: integer
+      volume_lots:
+        type: number
+    type: object
+  trade.CopiedTradeListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/trade.CopiedTrade'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  trade.CopyTradeRequest:
+    properties:
+      subscription_ids:
+        items:
+          type: integer
+        type: array
+    type: object
+  trade.CopyTradeResponse:
+    properties:
+      copied_count:
+        type: integer
+      copied_trades:
+        items:
+          $ref: '#/definitions/trade.CopiedTrade'
+        type: array
+    type: object
+  trade.CreateTradeRequest:
+    properties:
+      direction:
+        allOf:
+        - $ref: '#/definitions/trade.TradeDirection'
+        enum:
+        - buy
+        - sell
+      master_account_id:
+        type: integer
+      open_price:
+        type: number
+      open_time:
+        type: string
+      strategy_id:
+        type: integer
+      symbol:
+        type: string
+      volume_lots:
+        type: number
+    required:
+    - direction
+    - master_account_id
+    - open_price
+    - open_time
+    - strategy_id
+    - symbol
+    - volume_lots
+    type: object
+  trade.Trade:
+    properties:
+      close_price:
+        type: number
+      close_time:
+        type: string
+      commission:
+        type: number
+      created_at:
+        type: string
+      direction:
+        $ref: '#/definitions/trade.TradeDirection'
+      id:
+        type: integer
+      master_account_id:
+        type: integer
+      open_price:
+        type: number
+      open_time:
+        type: string
+      profit:
+        type: number
+      strategy_id:
+        type: integer
+      swap:
+        type: number
+      symbol:
+        type: string
+      volume_lots:
+        type: number
+    type: object
+  trade.TradeDirection:
+    enum:
+    - buy
+    - sell
+    type: string
+    x-enum-varnames:
+    - TradeDirectionBuy
+    - TradeDirectionSell
+  trade.TradeListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/trade.Trade'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
   user.CreateUserRequest:
     properties:
       email:
@@ -80,6 +770,1488 @@ info:
   title: Copy Trading API
   version: "1.0"
 paths:
+  /accounts:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список аккаунтов с пагинацией и фильтрами
+      parameters:
+      - description: Фильтр по ID пользователя
+        in: query
+        name: user_id
+        type: integer
+      - description: Фильтр по типу аккаунта (master/investor)
+        in: query
+        name: account_type
+        type: string
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Количество записей на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/account.AccountListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список аккаунтов
+      tags:
+      - accounts
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новый торговый аккаунт для пользователя
+      parameters:
+      - description: Данные аккаунта
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/account.CreateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/account.Account'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать аккаунт
+      tags:
+      - accounts
+  /accounts/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет аккаунт по ID
+      parameters:
+      - description: ID аккаунта
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить аккаунт
+      tags:
+      - accounts
+    get:
+      consumes:
+      - application/json
+      description: Возвращает аккаунт по его идентификатору
+      parameters:
+      - description: ID аккаунта
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/account.Account'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить аккаунт по ID
+      tags:
+      - accounts
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные аккаунта по ID
+      parameters:
+      - description: ID аккаунта
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные для обновления
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/account.UpdateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/account.Account'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить аккаунт
+      tags:
+      - accounts
+  /audit:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список записей аудита с фильтрами
+      parameters:
+      - description: Фильтр по имени сущности (users/accounts/strategies/offers/subscriptions/trades)
+        in: query
+        name: entity_name
+        type: string
+      - description: Фильтр по первичному ключу сущности
+        in: query
+        name: entity_pk
+        type: string
+      - description: Фильтр по операции (insert/update/delete)
+        in: query
+        name: operation
+        type: string
+      - description: Фильтр по ID пользователя
+        in: query
+        name: changed_by
+        type: integer
+      - description: Начало периода (RFC3339)
+        in: query
+        name: from
+        type: string
+      - description: Конец периода (RFC3339)
+        in: query
+        name: to
+        type: string
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Количество записей на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/audit.AuditListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список аудит-логов
+      tags:
+      - audit
+  /audit/{entity_name}/{entity_pk}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает историю изменений для конкретной сущности
+      parameters:
+      - description: Имя сущности (users/accounts/strategies/offers/subscriptions/trades)
+        in: path
+        name: entity_name
+        required: true
+        type: string
+      - description: Первичный ключ сущности
+        in: path
+        name: entity_pk
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/audit.AuditLog'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: История изменений сущности
+      tags:
+      - audit
+  /audit/stats:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает агрегированную статистику по аудит-логам
+      parameters:
+      - description: Фильтр по имени сущности
+        in: query
+        name: entity_name
+        type: string
+      - description: Начало периода (RFC3339)
+        in: query
+        name: from
+        type: string
+      - description: Конец периода (RFC3339)
+        in: query
+        name: to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/audit.AuditStats'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Статистика аудита
+      tags:
+      - audit
+  /import/jobs:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список задач импорта с фильтрами
+      parameters:
+      - description: Фильтр по типу (trades/accounts/statistics)
+        in: query
+        name: type
+        type: string
+      - description: Фильтр по статусу
+        in: query
+        name: status
+        type: string
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Количество записей на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/batchimport.JobListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список задач импорта
+      tags:
+      - import
+  /import/jobs/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает информацию о задаче импорта
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/batchimport.ImportJob'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить задачу импорта по ID
+      tags:
+      - import
+  /import/jobs/{id}/errors:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список ошибок для задачи импорта
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Количество записей на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/batchimport.JobErrorListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Ошибки задачи импорта
+      tags:
+      - import
+  /import/jobs/{id}/summary:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает сводную информацию о выполнении задачи импорта
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/batchimport.ImportJobSummary'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Сводка по задаче импорта
+      tags:
+      - import
+  /import/trades:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Загружает файл со сделками для импорта
+      parameters:
+      - description: Файл со сделками (CSV или JSON)
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: ID стратегии
+        in: formData
+        name: strategy_id
+        required: true
+        type: integer
+      - description: ID аккаунта
+        in: formData
+        name: account_id
+        required: true
+        type: integer
+      - description: Формат файла (csv/json)
+        in: formData
+        name: file_format
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/batchimport.ImportJob'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Импортировать сделки
+      tags:
+      - import
+  /offers:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список офферов с пагинацией и фильтрами
+      parameters:
+      - description: Фильтр по ID стратегии
+        in: query
+        name: strategy_id
+        type: integer
+      - description: Фильтр по статусу (active/archived/deleted)
+        in: query
+        name: status
+        type: string
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Количество записей на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/offer.OfferListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список офферов
+      tags:
+      - offers
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новый оффер для стратегии
+      parameters:
+      - description: Данные оффера
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/offer.CreateOfferRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/offer.Offer'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать оффер
+      tags:
+      - offers
+  /offers/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает оффер по его идентификатору
+      parameters:
+      - description: ID оффера
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/offer.Offer'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить оффер по ID
+      tags:
+      - offers
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные оффера по ID
+      parameters:
+      - description: ID оффера
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные для обновления
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/offer.UpdateOfferRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/offer.Offer'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить оффер
+      tags:
+      - offers
+  /offers/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Изменяет статус оффера (active, archived, deleted)
+      parameters:
+      - description: ID оффера
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новый статус
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/offer.ChangeStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/offer.Offer'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Изменить статус оффера
+      tags:
+      - offers
+  /statistics/leaderboard:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает топ стратегий по доходности
+      parameters:
+      - default: 10
+        description: Количество записей
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/statistics.LeaderboardEntry'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Лидерборд стратегий
+      tags:
+      - statistics
+  /statistics/master-income:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает информацию о доходах мастер-трейдера
+      parameters:
+      - description: ID пользователя-мастера
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      - description: Начало периода (RFC3339)
+        in: query
+        name: from
+        type: string
+      - description: Конец периода (RFC3339)
+        in: query
+        name: to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/statistics.MasterIncome'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Доход мастера
+      tags:
+      - statistics
+  /statistics/portfolio:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает портфель инвестора с его подписками и статистикой
+      parameters:
+      - description: ID пользователя-инвестора
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/statistics.PortfolioEntry'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Портфель инвестора
+      tags:
+      - statistics
+  /strategies:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список стратегий с пагинацией и фильтрами
+      parameters:
+      - description: Фильтр по статусу
+        in: query
+        name: status
+        type: string
+      - description: Минимальный ROI
+        in: query
+        name: min_roi
+        type: number
+      - description: Максимальная просадка
+        in: query
+        name: max_drawdown_pct
+        type: number
+      - description: Оценка риска
+        in: query
+        name: risk_score
+        type: integer
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Количество записей на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/strategy.StrategyListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список стратегий
+      tags:
+      - strategies
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новую торговую стратегию
+      parameters:
+      - description: Данные стратегии
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/strategy.CreateStrategyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/strategy.Strategy'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать стратегию
+      tags:
+      - strategies
+  /strategies/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает стратегию по её идентификатору
+      parameters:
+      - description: ID стратегии
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/strategy.GetStrategyByIDResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить стратегию по ID
+      tags:
+      - strategies
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные стратегии по ID
+      parameters:
+      - description: ID стратегии
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные для обновления
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/strategy.UpdateStrategyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/strategy.Strategy'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить стратегию
+      tags:
+      - strategies
+  /strategies/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Изменяет статус стратегии (active, archived, deleted)
+      parameters:
+      - description: ID стратегии
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новый статус
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/strategy.ChangeStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/strategy.Strategy'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Изменить статус стратегии
+      tags:
+      - strategies
+  /strategies/{id}/summary:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает суммарную статистику по стратегии
+      parameters:
+      - description: ID стратегии
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/strategy.StrategySummary'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить сводку по стратегии
+      tags:
+      - strategies
+  /subscriptions:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список подписок с пагинацией и фильтрами
+      parameters:
+      - description: Фильтр по ID пользователя
+        in: query
+        name: user_id
+        type: integer
+      - description: Фильтр по ID оффера
+        in: query
+        name: offer_id
+        type: integer
+      - description: Фильтр по статусу
+        in: query
+        name: status
+        type: string
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Количество записей на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/subscription.SubscriptionListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список подписок
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новую подписку инвестора на оффер
+      parameters:
+      - description: Данные подписки
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/subscription.CreateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/subscription.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать подписку
+      tags:
+      - subscriptions
+  /subscriptions/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает подписку по её идентификатору
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/subscription.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить подписку по ID
+      tags:
+      - subscriptions
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные подписки по ID
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные для обновления
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/subscription.UpdateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/subscription.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить подписку
+      tags:
+      - subscriptions
+  /subscriptions/{id}/history:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает историю изменений статуса подписки
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/subscription.SubscriptionStatusHistory'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: История статусов подписки
+      tags:
+      - subscriptions
+  /subscriptions/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Изменяет статус подписки (active, archived, suspended, deleted)
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новый статус
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/subscription.ChangeStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/subscription.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Изменить статус подписки
+      tags:
+      - subscriptions
+  /trades:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список сделок с пагинацией и фильтрами
+      parameters:
+      - description: Фильтр по ID стратегии
+        in: query
+        name: strategy_id
+        type: integer
+      - description: Начало периода (RFC3339)
+        in: query
+        name: from
+        type: string
+      - description: Конец периода (RFC3339)
+        in: query
+        name: to
+        type: string
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Количество записей на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/trade.TradeListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список сделок
+      tags:
+      - trades
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новую торговую сделку
+      parameters:
+      - description: Данные сделки
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/trade.CreateTradeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/trade.Trade'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать сделку
+      tags:
+      - trades
+  /trades/{id}/copy:
+    post:
+      consumes:
+      - application/json
+      description: Копирует сделку на указанные подписки
+      parameters:
+      - description: ID сделки
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID подписок для копирования
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/trade.CopyTradeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/trade.CopyTradeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Копировать сделку
+      tags:
+      - trades
+  /trades/copied:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список скопированных сделок с фильтрами
+      parameters:
+      - description: Фильтр по ID подписки
+        in: query
+        name: subscription_id
+        type: integer
+      - description: Фильтр по ID оригинальной сделки
+        in: query
+        name: trade_id
+        type: integer
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Количество записей на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/trade.CopiedTradeListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список скопированных сделок
+      tags:
+      - trades
   /users:
     get:
       consumes:

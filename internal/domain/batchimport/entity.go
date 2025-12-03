@@ -32,7 +32,7 @@ type ImportJobError struct {
 	ID           int64           `json:"id" db:"id"`
 	JobID        int64           `json:"job_id" db:"job_id"`
 	RowNumber    *int            `json:"row_number,omitempty" db:"row_number"`
-	RawData      json.RawMessage `json:"raw_data,omitempty" db:"raw_data"`
+	RawData      json.RawMessage `json:"raw_data,omitempty" db:"raw_data" swaggertype:"object"`
 	ErrorMessage string          `json:"error_message" db:"error_message"`
 	CreatedAt    time.Time       `json:"created_at" db:"created_at"`
 }
@@ -41,8 +41,8 @@ type ImportJobSummary struct {
 	TotalRows     int            `json:"total_rows"`
 	ProcessedRows int            `json:"processed_rows"`
 	ErrorRows     int            `json:"error_rows"`
-	ErrorsByType  map[string]int `json:"errors_by_type,omitempty"`
-	Duration      time.Duration  `json:"duration"`
+	ErrorsByType  map[string]int `json:"errors_by_type,omitempty" swaggertype:"object"`
+	Duration      time.Duration  `json:"duration" swaggertype:"integer"`
 }
 
 type CreateImportJobRequest struct {
@@ -70,4 +70,22 @@ type JobFilter struct {
 
 type ErrorFilter struct {
 	common.Pagination
+}
+
+// JobListResponse представляет пагинированный ответ со списком задач импорта
+type JobListResponse struct {
+	Data       []ImportJob `json:"data"`
+	Total      int64       `json:"total"`
+	Page       int         `json:"page"`
+	Limit      int         `json:"limit"`
+	TotalPages int         `json:"total_pages"`
+}
+
+// JobErrorListResponse представляет пагинированный ответ со списком ошибок импорта
+type JobErrorListResponse struct {
+	Data       []ImportJobError `json:"data"`
+	Total      int64            `json:"total"`
+	Page       int              `json:"page"`
+	Limit      int              `json:"limit"`
+	TotalPages int              `json:"total_pages"`
 }

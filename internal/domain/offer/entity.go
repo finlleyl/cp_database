@@ -42,3 +42,12 @@ type OfferFilter struct {
 	Status     common.OfferStatus `form:"status"`
 	common.Pagination
 }
+
+// OfferListResponse представляет пагинированный ответ со списком офферов
+type OfferListResponse struct {
+	Data       []Offer `json:"data"`
+	Total      int64   `json:"total"`
+	Page       int     `json:"page"`
+	Limit      int     `json:"limit"`
+	TotalPages int     `json:"total_pages"`
+}

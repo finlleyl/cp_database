@@ -68,3 +68,21 @@ type CreateCommissionRequest struct {
 	PeriodFrom     *time.Time     `json:"period_from,omitempty"`
 	PeriodTo       *time.Time     `json:"period_to,omitempty"`
 }
+
+// LeaderboardEntry представляет запись в лидерборде стратегий
+type LeaderboardEntry struct {
+	StrategyID          int64   `json:"strategy_id"`
+	Title               string  `json:"title"`
+	TotalProfit         float64 `json:"total_profit"`
+	TotalCommissions    float64 `json:"total_commissions"`
+	ActiveSubscriptions int     `json:"active_subscriptions"`
+}
+
+// PortfolioEntry представляет запись в портфеле инвестора
+type PortfolioEntry struct {
+	SubscriptionID    int64   `json:"subscription_id"`
+	StrategyID        int64   `json:"strategy_id"`
+	StrategyTitle     string  `json:"strategy_title"`
+	TotalProfit       float64 `json:"total_profit"`
+	CopiedTradesCount int64   `json:"copied_trades_count"`
+}

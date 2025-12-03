@@ -34,3 +34,12 @@ type AccountFilter struct {
 	AccountType string `form:"account_type"`
 	common.Pagination
 }
+
+// AccountListResponse представляет пагинированный ответ со списком аккаунтов
+type AccountListResponse struct {
+	Data       []Account `json:"data"`
+	Total      int64     `json:"total"`
+	Page       int       `json:"page"`
+	Limit      int       `json:"limit"`
+	TotalPages int       `json:"total_pages"`
+}

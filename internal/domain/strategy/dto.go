@@ -51,3 +51,12 @@ type StrategySummary struct {
 	StrategyID  int64   `json:"strategy_id"`
 	TotalProfit float64 `json:"total_profit"`
 }
+
+// StrategyListResponse представляет пагинированный ответ со списком стратегий
+type StrategyListResponse struct {
+	Data       []Strategy `json:"data"`
+	Total      int64      `json:"total"`
+	Page       int        `json:"page"`
+	Limit      int        `json:"limit"`
+	TotalPages int        `json:"total_pages"`
+}
