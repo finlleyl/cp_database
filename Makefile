@@ -1,4 +1,4 @@
-.PHONY: help build run test clean deps fmt lint docker-build docker-up docker-down docker-logs migrate-create migrate-up migrate-down
+.PHONY: help build run test clean deps fmt lint docker-build docker-up docker-down docker-logs migrate-create migrate-up migrate-down seed
 
 APP_NAME := cp_database
 BINARY_NAME := app
@@ -16,6 +16,20 @@ else
     DB_NAME        ?= $(shell grep POSTGRES_DB .env | cut -d '=' -f2)
 endif
 DB_DSN := postgres://$(DB_USER):$(DB_PASSWORD)@localhost:5432/$(DB_NAME)?sslmode=disable
+
+# Параметры для генерации синтетических данных (можно переопределять: make seed USERS=200 ...)
+USERS ?= 1000
+STRATEGIES ?= 1000
+OFFERS ?= 1000
+SUBSCRIPTIONS ?= 1000
+TRADES ?= 5000
+COPIED_TRADES ?= 5000
+COMMISSIONS ?= 5000
+FAVORITES ?= 1000
+AUDIT ?= 5000
+IMPORT_JOBS ?= 100
+IMPORT_ERRORS ?= 200
+SEED ?= 42
 
 deps: ## Установить зависимости
 	go mod download
@@ -71,6 +85,23 @@ migrate-up:
 
 migrate-down:
 	migrate -path=migrations -database "$(DB_DSN)" down -all
+
+seed: ## Сгенерировать синтетические данные в БД (по умолчанию TRUNCATE + users/strategies~1000, trades~5000)
+	go run ./cmd/seed \
+		--dsn "$(DB_DSN)" \
+		--seed $(SEED) \
+		--truncate=true \
+		--users $(USERS) \
+		--strategies $(STRATEGIES) \
+		--offers $(OFFERS) \
+		--subscriptions $(SUBSCRIPTIONS) \
+		--trades $(TRADES) \
+		--copied-trades $(COPIED_TRADES) \
+		--commissions $(COMMISSIONS) \
+		--favorites $(FAVORITES) \
+		--audit $(AUDIT) \
+		--import-jobs $(IMPORT_JOBS) \
+		--import-errors $(IMPORT_ERRORS)
 
 swagger: ## Сгенерировать Swagger документацию
 	swag init -g cmd/app/main.go -o docs

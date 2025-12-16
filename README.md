@@ -270,5 +270,6 @@ LEFT JOIN strategy_stats ss ON ss.strategy_id = s.id
 ```bash
 make docker-up
 make migrate-up
+make seed
 make run
 ```
